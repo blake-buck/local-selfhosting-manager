@@ -1,8 +1,15 @@
-import * as express from 'express';
 import {SERVER_PORT} from './environment';
-const path = require('path');
+import * as path from 'path';
+import * as bodyparser from 'body-parser';
 
+
+import * as express from 'express';
+import {useApplicationRoutes} from './routes/application';
 const app = express();
+
+app.use(bodyparser.json());
+
+useApplicationRoutes(app);
 
 app.get(
     '*', 
