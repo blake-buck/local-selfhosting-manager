@@ -42,7 +42,23 @@ async function queryItemById(tableToQuery:string, id:string){
     return table[id];
 }
 
+async function returnTable(table:string){
+    const db = await accessDb();
+    return Object.values(db[table]);
+}
+
 export function useApplicationRoutes(app){
+    app.get('/api/applications', async (req, res) => {
+        const table = await returnTable('applications');
+        if(table){
+            res.status(200).send({status:200, message:'QUERY EXECUTED SUCCESSFULLY', table});
+        }
+        else{
+            res.status(404).send({status:404, message:'APPLICATIONS TABLE NOT FOUND'})
+        }
+        
+    });
+
     app.get('/api/application/:id', async (req, res) => {
         const application = await queryItemById('applications', req.params.id);
 
