@@ -1,6 +1,9 @@
 import * as crypto from 'crypto';
 import * as path from 'path';
 
+import { exec } from 'child_process';
+
+
 import * as filesystem from 'fs'
 const fs = filesystem.promises;
 
@@ -75,4 +78,36 @@ export function useApplicationRoutes(app){
         await addToDatabase('applications', req.body);
         res.status(200).send({status:200, message:'ALL GOOD'});
     });
+
+    app.post('/api/application/clone', async (req, res) => {
+        const { repoUrl } = req.body;
+
+        exec(
+            `git clone ${repoUrl}`, 
+            {
+                cwd:path.join(__dirname, '../../applications')
+            }, 
+            (err, stdout, stderr) => {
+                if(err){
+                    console.log("ERR", err);
+                    res.status(400).send({status:400, message:err});
+                }
+                // Don't like how this feels, should get to the bottom of why Cloning into... is output through stderr
+                if(stdout || stderr.includes('Cloning into')){
+                    console.log("STDOUT", stdout);
+                    res.status(200).send({status:200, message:stdout ? stdout : stderr});
+                }
+                if(!stderr.includes('Cloning into')){
+                    console.log("STDERR ", stderr);
+                    
+                    res.status(400).send({status:400, message:stderr});
+                }
+            }
+        );
+
+    });
 }
+
+
+
+
