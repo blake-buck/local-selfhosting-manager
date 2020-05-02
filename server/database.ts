@@ -1,0 +1,42 @@
+import * as path from 'path';
+
+import * as filesystem from 'fs'
+const fs = filesystem.promises;
+
+const dbPath = path.join(__dirname, '../../db/db.json');
+const accessDb = async () => JSON.parse(
+    await fs.readFile(dbPath, {encoding:'utf8'})
+);
+
+export async function addToDatabase(tableToUpdate:string, value:any){
+    const db = await accessDb();
+
+    
+    const table = db[tableToUpdate];
+
+    while(true){
+        let hash = `H${Math.random()}${Math.random()}`;
+
+        if(table[hash] === undefined){
+            table[hash] = {id:hash, ...value};
+            break;
+        }
+
+    }
+
+    await fs.writeFile(dbPath, JSON.stringify(db));
+
+    return true;
+}
+
+
+export async function queryItemById(tableToQuery:string, id:string){
+    const db = await accessDb();
+    const table = db[tableToQuery];
+    return table[id];
+}
+
+export async function returnTable(table:string){
+    const db = await accessDb();
+    return Object.values(db[table]);
+}
