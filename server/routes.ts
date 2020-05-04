@@ -1,4 +1,4 @@
-import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication} from './controllers';
+import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile} from './controllers';
 
 export function useApplicationRoutes(app){
 
@@ -40,6 +40,11 @@ export function useApplicationRoutes(app){
     app.post(
         '/api/application/stop',
         stopApplication
+    )
+
+    app.post(
+        '/api/application/serve-file',
+        addServingFile
     )
 
     app.delete(

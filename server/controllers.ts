@@ -9,6 +9,7 @@ import * as pm2 from 'pm2';
 
 import { returnTable, queryItemById, addToDatabase, deleteItemById } from './database';
 import { deleteEverythingInDirectory } from './deleteDirectory';
+import { createServingFile } from './createServingFile';
 
 
 
@@ -167,4 +168,12 @@ export async function stopApplication(req, res){
             res.status(200).send({status:200, message:`${applicationName} is stopped!`})
         }
     })
+}
+
+export async function addServingFile(req, res){
+    const {applicationPath, serveFrom, rerouteDefaultPathTo, port} = req.body;
+    
+    await createServingFile(applicationPath, serveFrom, rerouteDefaultPathTo, port);
+
+    res.status(200).send({status:200, message:'Serve file has been created.'})
 }
