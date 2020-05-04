@@ -5,10 +5,15 @@ import { exec } from 'child_process';
 import * as filesystem from 'fs'
 const fs = filesystem.promises;
 
+import * as pm2 from 'pm2';
+
 import { returnTable, queryItemById, addToDatabase, deleteItemById } from './database';
 import { deleteEverythingInDirectory } from './deleteDirectory';
 
+
+
 const applicationsPath = path.join(__dirname, '../../applications');
+
 
 export async function getAllApplications(req, res){
     const table = await returnTable('applications');
@@ -126,4 +131,40 @@ export async function deleteApplication(req, res){
     }
     
     res.status(200).send({status:200, message:`${application.title} has been deleted`})
+}
+
+export async function startApplication(req, res){
+    const { applicationPath, applicationName, startScript, scriptArgs } = req.body;
+    
+    pm2.start(
+        {
+            name:   applicationName,
+            script: startScript,
+            args:   scriptArgs,
+            cwd:    path.join(__dirname, `../../applications/${applicationPath}`)
+        },
+        (err, proc) => {
+            if(err){
+                console.log(err);
+                res.status(500).send({status:500, message:`Error starting ${applicationName}`});
+            }
+            else if(proc){
+                res.status(200).send({status:200, message:`${applicationName} is started!`})
+            }
+        }
+    );
+}
+
+export async function stopApplication(req, res){
+    const { applicationName } = req.body;
+
+    pm2.stop(applicationName, (err, proc) => {
+        if(err){
+            console.log(err);
+            res.status(500).send({status:500, message:`Error stopping ${applicationName}`});
+        }
+        else if(proc){
+            res.status(200).send({status:200, message:`${applicationName} is stopped!`})
+        }
+    })
 }
