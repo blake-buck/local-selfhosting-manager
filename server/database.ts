@@ -36,6 +36,16 @@ export async function queryItemById(tableToQuery:string, id:string){
     return table[id];
 }
 
+export async function deleteItemById(tableToQuery:string, id:string){
+    const db = await accessDb();
+    const table = db[tableToQuery];
+    delete table[id];
+    
+    await fs.writeFile(dbPath, JSON.stringify(db))
+
+    return true
+}
+
 export async function returnTable(table:string){
     const db = await accessDb();
     return Object.values(db[table]);

@@ -5,7 +5,8 @@ import { exec } from 'child_process';
 import * as filesystem from 'fs'
 const fs = filesystem.promises;
 
-import { returnTable, queryItemById, addToDatabase } from './database';
+import { returnTable, queryItemById, addToDatabase, deleteItemById } from './database';
+import { deleteEverythingInDirectory } from './deleteDirectory';
 
 const applicationsPath = path.join(__dirname, '../../applications');
 
@@ -79,7 +80,7 @@ export async function applicationSetup(req, res){
     exec(
         commands, 
         {
-            cwd:path.join(__dirname, `../../applications/${application}`)
+            cwd:`${applicationsPath}/${application}`
         }, 
         async (err, stdout, stderr) => {
 
@@ -88,12 +89,12 @@ export async function applicationSetup(req, res){
                 res.status(400).send({status:400, message:err});
             }
 
-            if(stdout){
+            else if(stdout){
                 console.log("STDOUT", stdout)
                 res.status(200).send({status:200, message:stdout});
             }
 
-            if(stderr){
+            else if(stderr){
                 console.log("STDERR ", stderr);
                 
                 res.status(400).send({status:400, message:stderr});
@@ -101,4 +102,28 @@ export async function applicationSetup(req, res){
 
         }
     );
+}
+
+export async function deleteApplication(req, res){
+    const { id } = req.params;
+    const application = await queryItemById('applications', id);
+
+    console.log('DELETING...');
+    // delete application from database
+    await deleteItemById('applications', id);
+
+    // delete application directory from applications folder
+    await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+
+    // clean up any directories that dont get deleted -- not sure how i feel about this; deleteEverythingInDirectory should delete everything in one pass
+    try{
+        if(await fs.readdir(`${applicationsPath}/${application.title}`)){
+            await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+        }
+    }
+    catch(e){
+        console.log('ERROR ', e);
+    }
+    
+    res.status(200).send({status:200, message:`${application.title} has been deleted`})
 }

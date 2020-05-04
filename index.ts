@@ -14,4 +14,7 @@ app.use(bodyparser.json());
 useApplicationRoutes(app);
 serveClient(app);
 
-app.listen(SERVER_PORT, () => console.log(`LISTENING ON PORT ${SERVER_PORT}`));
+
+const server = app.listen(SERVER_PORT, () => console.log(`LISTENING ON PORT ${SERVER_PORT}`));
+
+server.timeout = 300000;
