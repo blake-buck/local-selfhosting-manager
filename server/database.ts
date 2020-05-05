@@ -8,19 +8,20 @@ const accessDb = async () => JSON.parse(
     await fs.readFile(dbPath, {encoding:'utf8'})
 );
 
-export async function addToDatabase(tableToUpdate:string, value:any){
+export async function addToDatabase(tableToUpdate:string, key:any, value:any){
     const db = await accessDb();
-
     
     const table = db[tableToUpdate];
 
+    let hash = key;
     while(true){
-        let hash = `H${Math.random()}${Math.random()}`;
-
+        
         if(table[hash] === undefined){
             table[hash] = {id:hash, ...value};
             break;
         }
+        
+        hash += 'I'
 
     }
 

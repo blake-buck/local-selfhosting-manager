@@ -12,7 +12,8 @@ import { deleteEverythingInDirectory } from './utils/deleteDirectory';
 import { createServingFile } from './utils/createServingFile';
 import { OPERATING_SYSTEM } from '../environment';
 import { getWindowsUser } from './utils/getWindowsUser';
-import { applicationsPath, rootDirectory } from './utils/paths';
+import { applicationsPath } from './utils/paths';
+import { findFavicon } from './utils/findFavicon';
 
 
 export async function getAllApplications(req, res){
@@ -37,7 +38,7 @@ export async function getApplicationById(req, res){
 }
 
 export async function addApplication(req, res){
-    await addToDatabase('applications', req.body);
+    await addToDatabase('applications', req.body.title, req.body);
     res.status(200).send({status:200, message:'ALL GOOD'});
 }
 
@@ -73,7 +74,7 @@ export async function refresh(req, res){
 
     const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.title === appTitle));
     untrackedApplicationTitles.forEach(
-        async (untrackedAppTitle:string) => await addToDatabase('applications', {title:untrackedAppTitle})
+        async (untrackedAppTitle:string) => await addToDatabase('applications', untrackedAppTitle, {title:untrackedAppTitle, favicon: await findFavicon(untrackedAppTitle)})
     );
     
     res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`});
@@ -248,14 +249,24 @@ export async function createShortcut(req, res){
 
         try{
             const username = await getWindowsUser();
-            const { shortcutName, shortcutUrl } = req.body;
+            const { shortcutName, shortcutUrl, applicationId } = req.body;
+
+            
             
             const shortcutPath = `C:\\Users\\${username}\\Desktop\\${shortcutName}.url`;
+            
+            let shortcutFileContents = `[InternetShortcut]\nURL=${shortcutUrl}`;
+
+            const favicon = (await queryItemById('applications', applicationId)).favicon;
+            if(favicon){
+                shortcutFileContents += `\nIconIndex=0\nIconFile=${favicon}`
+            }
 
             await fs.writeFile(
                 shortcutPath,
-                `[InternetShortcut]
-                URL=${shortcutUrl}`,
+
+                shortcutFileContents,
+
                 {encoding:'utf-8'}
             );
 
