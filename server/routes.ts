@@ -1,4 +1,4 @@
-import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile, autoRestartApplications, addToWindowsStartup, removeFromWindowsStartup} from './controllers';
+import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile, autoRestartApplications, createShortcut, addToStartup, removeFromStartup} from './controllers';
 
 export function useApplicationRoutes(app){
 
@@ -53,13 +53,18 @@ export function useApplicationRoutes(app){
     );
 
     app.post(
-        '/api/application/add-to-windows-start',
-        addToWindowsStartup
+        '/api/startup/add',
+        addToStartup
     );
 
     app.post(
-        '/api/application/remove-from-windows-start',
-        removeFromWindowsStartup
+        '/api/startup/remove',
+        removeFromStartup
+    );
+
+    app.post(
+        '/api/application/create-shortcut',
+        createShortcut
     )
 
     app.delete(

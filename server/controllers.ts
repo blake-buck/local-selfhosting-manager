@@ -8,12 +8,11 @@ const fs = filesystem.promises;
 import * as pm2 from 'pm2';
 
 import { returnTable, queryItemById, addToDatabase, deleteItemById } from './database';
-import { deleteEverythingInDirectory } from './deleteDirectory';
-import { createServingFile } from './createServingFile';
-
-
-const rootDirectory = path.join(__dirname, '../../');
-const applicationsPath = path.join(__dirname, rootDirectory, 'applications');
+import { deleteEverythingInDirectory } from './utils/deleteDirectory';
+import { createServingFile } from './utils/createServingFile';
+import { OPERATING_SYSTEM } from '../environment';
+import { getWindowsUser } from './utils/getWindowsUser';
+import { applicationsPath, rootDirectory } from './utils/paths';
 
 
 export async function getAllApplications(req, res){
@@ -193,64 +192,81 @@ export async function autoRestartApplications(req, res){
     
 }
 
-export async function addToWindowsStartup(req, res){
-    exec(
-        'get_windows_user.bat',
-        {
-            cwd:rootDirectory
-        },
-        async (err, stdout, stderr) => {
-            if(err){
-                console.log("ERR ", err);
-                res.status(500).send({status:500, message:'An error reading current Windows username.'});
-            }
-            else if(stdout){
-                const username = stdout.split('\n')[2].trim();
-                await fs.writeFile(
-                    `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\local-selfhosting-manager-reboot.bat`,
-                    'pm2 resurrect',
-                    {encoding:'utf8'}
-                );
-                res.status(200).send({status:200, message:'Applications will restart whenever computer is rebooted.'});
-            }
-            else if(stderr){
-                console.log("stderr ", stderr);
-                res.status(500).send({status:500, message:'An error reading current Windows username.'});
-            }
-           
+export async function addToStartup(req, res){
+    if(OPERATING_SYSTEM === 'WINDOWS'){
+
+        try{
+            const username = await getWindowsUser();
+
+            await fs.writeFile(
+                `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\local-selfhosting-manager-reboot.bat`,
+                'pm2 resurrect',
+                {encoding:'utf8'}
+            );
+
+            res.status(200).send({status:200, message:'Applications will restart whenever computer is rebooted.'});
         }
-    );
+        catch(e){
+            res.status(500).send({status:500, message:e})
+        }
+
+    }
+    else{
+        res.status(500).send({status:500, message:'Unrecognized operating system!'})
+    }
+    
 }
 
-export async function removeFromWindowsStartup(req, res){
-    exec(
-        'get_windows_user.bat',
-        {
-            cwd:rootDirectory
-        },
-        async (err, stdout, stderr) => {
-            if(err){
-                console.log("ERR ", err);
-                res.status(500).send({status:500, message:'An error reading current Windows username.'});
+export async function removeFromStartup(req, res){
+    if(OPERATING_SYSTEM === 'WINDOWS'){
+        try{
+            const username = await getWindowsUser();
+            const startupFilePath = `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\local-selfhosting-manager-reboot.bat`;
+    
+            try{
+                await fs.unlink(startupFilePath);
             }
-            else if(stdout){
-                const username = stdout.split('\n')[2].trim();
-                const startupFilePath = `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\local-selfhosting-manager-reboot.bat`;
+            catch(e){
+                console.log(e);
+            }
+            
+            res.status(200).send({status:200, message:'Applications will not restart whenever computer is rebooted.'});
 
-                try{
-                    await fs.unlink(startupFilePath);
-                }
-                catch(e){
-                    console.log(e);
-                }
-                
-                res.status(200).send({status:200, message:'Applications will not restart whenever computer is rebooted.'});
-            }
-            else if(stderr){
-                console.log("stderr ", stderr);
-                res.status(500).send({status:500, message:'An error reading current Windows username.'});
-            }
-           
         }
-    );
+        catch(e){
+            res.status(500).send({status:500, message:e});
+        }
+    }
+    else{
+        res.status(500).send({status:500, message:'Unrecognized operating system!'})
+    }
+    
+}
+
+export async function createShortcut(req, res){
+    if(OPERATING_SYSTEM === 'WINDOWS'){
+
+        try{
+            const username = await getWindowsUser();
+            const { shortcutName, shortcutUrl } = req.body;
+            
+            const shortcutPath = `C:\\Users\\${username}\\Desktop\\${shortcutName}.url`;
+
+            await fs.writeFile(
+                shortcutPath,
+                `[InternetShortcut]
+                URL=${shortcutUrl}`,
+                {encoding:'utf-8'}
+            );
+
+            res.status(200).send({status:200, message:'Shortcut added to user desktop.'});
+        }
+        catch(e){
+            res.status(500).send({status:500, message:e})
+        }
+        
+    }
+    else{
+        res.status(500).send({status:500, message:'Unrecognized operating system!'})
+    }
 }
