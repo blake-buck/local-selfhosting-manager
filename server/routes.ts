@@ -1,4 +1,4 @@
-import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile} from './controllers';
+import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile, autoRestartApplications, addToWindowsStartup, removeFromWindowsStartup} from './controllers';
 
 export function useApplicationRoutes(app){
 
@@ -40,11 +40,26 @@ export function useApplicationRoutes(app){
     app.post(
         '/api/application/stop',
         stopApplication
-    )
+    );
 
     app.post(
         '/api/application/serve-file',
         addServingFile
+    );
+
+    app.post(
+        '/api/application/auto-restart',
+        autoRestartApplications
+    );
+
+    app.post(
+        '/api/application/add-to-windows-start',
+        addToWindowsStartup
+    );
+
+    app.post(
+        '/api/application/remove-from-windows-start',
+        removeFromWindowsStartup
     )
 
     app.delete(
