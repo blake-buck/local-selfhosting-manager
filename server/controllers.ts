@@ -7,7 +7,7 @@ const fs = filesystem.promises;
 
 import * as pm2 from 'pm2';
 
-import { returnTable, queryItemById, addToDatabase, deleteItemById } from './database';
+import { returnTable, queryItemById, addToDatabase, deleteItemById, updateItemById } from './database';
 import { deleteEverythingInDirectory } from './utils/deleteDirectory';
 import { createServingFile } from './utils/createServingFile';
 import { OPERATING_SYSTEM } from '../environment';
@@ -280,4 +280,13 @@ export async function createShortcut(req, res){
     else{
         res.status(500).send({status:500, message:'Unrecognized operating system!'})
     }
+}
+
+export async function updateApplication(req, res){
+    const { id } = req.params;
+    const { updatedValues } = req.body;
+
+    await updateItemById('applications', id, updatedValues);
+
+    res.status(200).send({status:200, message:`${id} has been updated.`})
 }

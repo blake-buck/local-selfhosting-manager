@@ -7,6 +7,9 @@ const dbPath = path.join(__dirname, '../../db/db.json');
 const accessDb = async () => JSON.parse(
     await fs.readFile(dbPath, {encoding:'utf8'})
 );
+const saveDb = async (db:any) => {
+    await fs.writeFile(dbPath, JSON.stringify(db));
+}
 
 export async function addToDatabase(tableToUpdate:string, key:any, value:any){
     const db = await accessDb();
@@ -25,7 +28,7 @@ export async function addToDatabase(tableToUpdate:string, key:any, value:any){
 
     }
 
-    await fs.writeFile(dbPath, JSON.stringify(db));
+    saveDb(db);
 
     return true;
 }
@@ -42,7 +45,7 @@ export async function deleteItemById(tableToQuery:string, id:string){
     const table = db[tableToQuery];
     delete table[id];
     
-    await fs.writeFile(dbPath, JSON.stringify(db))
+    saveDb(db);
 
     return true
 }
@@ -50,4 +53,14 @@ export async function deleteItemById(tableToQuery:string, id:string){
 export async function returnTable(table:string){
     const db = await accessDb();
     return Object.values(db[table]);
+}
+
+export async function updateItemById(tableToQuery:string, id:string, updatedValues:any){
+    const db = await accessDb();
+    const table = db[tableToQuery];
+
+    table[id] = {...table[id], ...updatedValues};
+    saveDb(db);
+
+    return true;
 }
