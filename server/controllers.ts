@@ -16,8 +16,10 @@ import { applicationsPath } from './utils/paths';
 import { findFavicon } from './utils/findFavicon';
 
 
+const APPLICATIONS_TABLE = 'applications';
+
 export async function getAllApplications(req, res){
-    const table = await returnTable('applications');
+    const table = await returnTable(APPLICATIONS_TABLE);
     if(table){
         res.status(200).send({status:200, message:'QUERY EXECUTED SUCCESSFULLY', table});
     }
@@ -27,7 +29,7 @@ export async function getAllApplications(req, res){
 }
 
 export async function getApplicationById(req, res){
-    const application = await queryItemById('applications', req.params.id);
+    const application = await queryItemById(APPLICATIONS_TABLE, req.params.id);
 
     if(application){
         res.status(200).send({status:200, message:'QUERY EXECUTED SUCCESSFULLY', application});
@@ -38,7 +40,7 @@ export async function getApplicationById(req, res){
 }
 
 export async function addApplication(req, res){
-    await addToDatabase('applications', req.body.title, req.body);
+    await addToDatabase(APPLICATIONS_TABLE, req.body.title, req.body);
     res.status(200).send({status:200, message:'ALL GOOD'});
 }
 
@@ -70,11 +72,11 @@ export async function cloneRepo(req, res){
 
 export async function refresh(req, res){
     const applicationsFolderContents = await fs.readdir(applicationsPath);
-    const applicationsInDatabase     = await returnTable('applications');
+    const applicationsInDatabase     = await returnTable(APPLICATIONS_TABLE);
 
     const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.title === appTitle));
     untrackedApplicationTitles.forEach(
-        async (untrackedAppTitle:string) => await addToDatabase('applications', untrackedAppTitle, {title:untrackedAppTitle, favicon: await findFavicon(untrackedAppTitle)})
+        async (untrackedAppTitle:string) => await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {title:untrackedAppTitle, favicon: await findFavicon(untrackedAppTitle)})
     );
     
     res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`});
@@ -112,11 +114,11 @@ export async function applicationSetup(req, res){
 
 export async function deleteApplication(req, res){
     const { id } = req.params;
-    const application = await queryItemById('applications', id);
+    const application = await queryItemById(APPLICATIONS_TABLE, id);
 
     console.log('DELETING...');
     // delete application from database
-    await deleteItemById('applications', id);
+    await deleteItemById(APPLICATIONS_TABLE, id);
 
     // delete application directory from applications folder
     await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
@@ -201,7 +203,9 @@ export async function addToStartup(req, res){
 
             await fs.writeFile(
                 `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\local-selfhosting-manager-reboot.bat`,
+                
                 'pm2 resurrect',
+                
                 {encoding:'utf8'}
             );
 
@@ -257,7 +261,7 @@ export async function createShortcut(req, res){
             
             let shortcutFileContents = `[InternetShortcut]\nURL=${shortcutUrl}`;
 
-            const favicon = (await queryItemById('applications', applicationId)).favicon;
+            const favicon = (await queryItemById(APPLICATIONS_TABLE, applicationId)).favicon;
             if(favicon){
                 shortcutFileContents += `\nIconIndex=0\nIconFile=${favicon}`
             }
@@ -286,7 +290,7 @@ export async function updateApplication(req, res){
     const { id } = req.params;
     const { updatedValues } = req.body;
 
-    await updateItemById('applications', id, updatedValues);
+    await updateItemById(APPLICATIONS_TABLE, id, updatedValues);
 
     res.status(200).send({status:200, message:`${id} has been updated.`})
 }

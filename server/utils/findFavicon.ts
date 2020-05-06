@@ -18,19 +18,21 @@ async function searchDirectory(directory, directoriesToExclude?){
     let favicon = undefined;
     for(let i = 0; i < directoryContents.length; i++){
         const dirent = directoryContents[i];
+
         if(dirent.name === 'favicon.ico'){
-            console.log('FOUND IT')
-            
             return path.join(directory, dirent.name);
         }
         else if(dirent.isDirectory() && !directoriesToExclude?.includes(dirent.name)){
+
             let potentialFavicon = await searchDirectory(
                 path.join(directory, dirent.name), 
                 directoriesToExclude
             );
+
             if(potentialFavicon){
                 return potentialFavicon;
             }
+            
         }
     }
 

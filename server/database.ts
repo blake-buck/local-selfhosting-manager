@@ -28,7 +28,7 @@ export async function addToDatabase(tableToUpdate:string, key:any, value:any){
 
     }
 
-    saveDb(db);
+    await saveDb(db);
 
     return true;
 }
@@ -45,7 +45,7 @@ export async function deleteItemById(tableToQuery:string, id:string){
     const table = db[tableToQuery];
     delete table[id];
     
-    saveDb(db);
+    await saveDb(db);
 
     return true
 }
@@ -60,7 +60,7 @@ export async function updateItemById(tableToQuery:string, id:string, updatedValu
     const table = db[tableToQuery];
 
     table[id] = {...table[id], ...updatedValues};
-    saveDb(db);
+    await saveDb(db);
 
     return true;
 }
