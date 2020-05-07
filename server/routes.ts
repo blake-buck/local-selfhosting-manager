@@ -2,6 +2,8 @@ import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplicatio
 
 export function useApplicationRoutes(app){
 
+
+    // Application GET routes
     app.get(
         '/api/applications',
         getAllApplications
@@ -12,6 +14,10 @@ export function useApplicationRoutes(app){
         getApplicationById
     );
 
+
+
+    
+    // Application POST routes
     app.post(
         '/api/application', 
         addApplication
@@ -48,7 +54,7 @@ export function useApplicationRoutes(app){
     );
 
     app.post(
-        '/api/application/auto-restart',
+        '/api/applications/auto-restart',
         autoRestartApplications
     );
 
@@ -67,11 +73,19 @@ export function useApplicationRoutes(app){
         createShortcut
     );
 
+
+
+
+    // Application PUT routes
     app.put(
         '/api/application/:id',
         updateApplication
     );
 
+
+
+
+    // Application DELETE routes
     app.delete(
         '/api/application/:id',
         deleteApplication

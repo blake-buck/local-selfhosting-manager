@@ -20,7 +20,7 @@ async function searchDirectory(directory, directoriesToExclude?){
         const dirent = directoryContents[i];
 
         if(dirent.name === 'favicon.ico'){
-            return path.join(directory, dirent.name);
+            return path.join(directory, dirent.name).replace(/.+local-selfhosting-manager/, '');
         }
         else if(dirent.isDirectory() && !directoriesToExclude?.includes(dirent.name)){
 
