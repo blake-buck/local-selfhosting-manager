@@ -11,8 +11,6 @@ export function serveClient(app){
         }
     );
 
-    
-
     app.get(
         '*', 
         express.static(distHtml),
@@ -23,7 +21,7 @@ export function serveClient(app){
                 res.sendFile(path.join(applicationsPath, req.url.replace('applications/', '')));
             }
             else{
-                res.sendFile(path.join(distHtml, 'index.html'));
+                res.sendFile(path.join(distHtml, req.url));
             }
         }
     );

@@ -39,12 +39,12 @@ function createCard(application:Application){
         <span>${application.title}</span>
     </header>
 
-    <article>
-        <span>Card Body</span>
-    </article>
-
     <footer>
-        Card Actions
+        <button>Start Application</button>
+        <button>Stop Application</button>
+        <button>Configure Application</button>
+        <button>Create Shortcut</button>
+        <button>Delete Application</button>
     </footer>
     `
     return card
