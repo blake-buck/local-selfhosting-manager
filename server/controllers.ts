@@ -75,11 +75,13 @@ export async function refresh(req, res){
     const applicationsInDatabase     = await returnTable(APPLICATIONS_TABLE);
 
     const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.title === appTitle));
-    untrackedApplicationTitles.forEach(
-        async (untrackedAppTitle:string) => await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {title:untrackedAppTitle, favicon: await findFavicon(untrackedAppTitle)})
-    );
     
-    res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`});
+    for(let i=0; i < untrackedApplicationTitles.length; i++){
+        const untrackedAppTitle = untrackedApplicationTitles[i];
+        await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {title:untrackedAppTitle, favicon: await findFavicon(untrackedAppTitle)})
+    }
+    
+    res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`, table: await returnTable(APPLICATIONS_TABLE)});
 }
 
 export async function applicationSetup(req, res){

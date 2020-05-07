@@ -17,8 +17,9 @@ window.addEventListener('load', async (e) => {
 
     document.querySelector('#openCloningDialog').addEventListener('click', openCloningDialog);
     document.querySelectorAll('#closeCloningDialog').forEach(el => el.addEventListener('click', closeCloningDialog));
-
     document.querySelector('#cloneRepository').addEventListener('click', cloneRepository);
+
+    document.querySelector('#refreshApplications').addEventListener('click', refreshApplications);
 });
 
 
@@ -126,3 +127,13 @@ async function cloneRepository(){
 
 }
 
+async function refreshApplications(){
+    let response: any = await fetch(
+        '/api/applications/refresh', 
+        { method:'POST' }
+    );
+
+    const applications = (await response.json()).table;
+    
+    renderApplicationCards(applications);
+}
