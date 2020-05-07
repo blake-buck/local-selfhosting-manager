@@ -3,13 +3,56 @@
     <head>
         <meta charset='utf8'>
         <script src='index.js'></script>
+        <link rel='stylesheet' href='./reset.css'>
         <link rel='stylesheet' href='./index.css'>
+        <link rel='stylesheet' href='./cloning-dialog.css'>
     </head>
 
     <body>
-        <h1>Client Dashboard</h1>
+
+        <header class='application-header'>
+            <h1>Applications</h1>
+            <span>
+                <button id='openCloningDialog'>Clone</button>
+            </span>
+        </header>
+        
         <div class='application-cards'>
 
         </div>
+
+        <div class='clone-app-dialog-backdrop'>
+            <div class='clone-app-dialog'>
+
+                <div class='step-1'>
+                    <h3>Clone Git Repository</h3>
+                    <input id='repoUrl' placeholder='Repo URL' />
+                    <span>
+                        <button id='closeCloningDialog'>Close</button>
+                        <button id='cloneRepository'>Clone</button>
+                    </span>
+                    
+                </div>
+
+                <div class='step-2'>
+                    <h3>Cloning</h3>
+                    <div class='spinner'></div>
+                    <span>
+                        <button id='closeCloningDialog'>Close</button>
+                    </span>
+                    
+                </div>
+
+                <div class='step-3'>
+                    <h3>Success</h3>
+                    <p>&#10004;</p>
+                    <span>
+                        <button id='closeCloningDialog'>Close</button>
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
     </body>
 </html>

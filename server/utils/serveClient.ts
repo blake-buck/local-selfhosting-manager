@@ -15,8 +15,6 @@ export function serveClient(app){
         '*', 
         express.static(distHtml),
         (req, res) => {
-            console.log(req.url);
-
             if(req.url.includes('.ico')){
                 res.sendFile(path.join(applicationsPath, req.url.replace('applications/', '')));
             }
