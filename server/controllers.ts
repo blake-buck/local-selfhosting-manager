@@ -121,9 +121,16 @@ export async function deleteApplication(req, res){
     console.log('DELETING...');
     // delete application from database
     await deleteItemById(APPLICATIONS_TABLE, id);
+    
 
     // delete application directory from applications folder
     await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+
+    pm2.stop(application.id, (err) => {
+        if(err){
+            console.log(err)
+        }
+    });
 
     // clean up any directories that dont get deleted -- not sure how i feel about this; deleteEverythingInDirectory should delete everything in one pass
     try{
@@ -135,7 +142,7 @@ export async function deleteApplication(req, res){
         console.log('ERROR ', e);
     }
     
-    res.status(200).send({status:200, message:`${application.title} has been deleted`})
+    res.status(200).send({status:200, message:`${application.title} has been deleted`, table: await returnTable(APPLICATIONS_TABLE)})
 }
 
 export async function startApplication(req, res){

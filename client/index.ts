@@ -31,6 +31,7 @@ function applicationDiv(){
 function createCard(application:Application){
     const card = document.createElement('div');
     card.classList.add('card');
+    card.id = application.id;
 
     card.innerHTML = '';
 
@@ -54,9 +55,12 @@ function createCard(application:Application){
         <button>Stop Application</button>
         <button>Configure Application</button>
         <button>Create Shortcut</button>
-        <button>Delete Application</button>
+        <button id='deleteApplication'>Delete Application</button>
     </footer>
     `
+
+    card.querySelector('#deleteApplication').addEventListener('click', () => deleteApplication(application.id));
+
     return card
 }
 
@@ -135,5 +139,16 @@ async function refreshApplications(){
 
     const applications = (await response.json()).table;
     
+    renderApplicationCards(applications);
+}
+
+async function deleteApplication(id:string){
+    let response: any = await fetch(
+        `/api/application/${id}`, 
+        { method:'DELETE' }
+    );
+
+    const applications = (await response.json()).table;
+
     renderApplicationCards(applications);
 }
