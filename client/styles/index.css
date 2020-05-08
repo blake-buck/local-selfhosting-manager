@@ -1,3 +1,6 @@
+@import 'reset.css';
+@import 'cloning-dialog.css';
+
 body{
     color: #444444;
 }
