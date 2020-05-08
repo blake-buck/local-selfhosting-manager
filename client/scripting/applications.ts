@@ -1,12 +1,16 @@
 const applicationDiv = () => document.querySelector('.application-cards');
 
 function createCard(application:Application){
+    // Create card wrapper
     const card = document.createElement('div');
     card.classList.add('card');
     card.id = application.id;
 
+    // initialize innerHTML to be blank
     card.innerHTML = '';
 
+
+    // if the application has a favicon, add a media element to the card
     if(application.favicon){
         card.innerHTML += 
         `
@@ -16,6 +20,7 @@ function createCard(application:Application){
         `
     }
 
+    // add the application title and action buttons to the card
     card.innerHTML += 
     `
     <header>
@@ -31,6 +36,7 @@ function createCard(application:Application){
     </footer>
     `
 
+    // add event listeners to card buttons
     card.querySelector('#deleteApplication').addEventListener('click', () => deleteApplication(application.id));
 
     return card
@@ -38,8 +44,10 @@ function createCard(application:Application){
 
 
 function renderApplicationCards(applications:Application[]){
+    // clear out old application cards
     applicationDiv().innerHTML = '';
 
+    // loop through applications and add cards to DOM
     applications.forEach(
         application => {
             applicationDiv().appendChild(
@@ -50,6 +58,7 @@ function renderApplicationCards(applications:Application[]){
 }
 
 async function refreshApplications(){
+    // check the applications folder for user added apps
     let response: any = await fetch(
         '/api/applications/refresh', 
         { method:'POST' }

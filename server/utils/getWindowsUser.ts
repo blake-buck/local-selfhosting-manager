@@ -1,6 +1,7 @@
 import { exec } from 'child_process';
 import { rootDirectory } from './paths';
 
+// executes a batch file to get the windows username
 export async function getWindowsUser(){
     return new Promise(
         (resolve, reject) => {

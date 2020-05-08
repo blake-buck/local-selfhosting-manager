@@ -11,7 +11,7 @@ export async function deleteEverythingInDirectory(path){
             await fs.unlink(`${path}/${dirent.name}`)
         }
 
-        // the function gets called for every directory in the current directory
+        // the deleteEverythingInDirectory gets called for every directory in the current directory
         if(dirent.isDirectory()){
             await deleteEverythingInDirectory(`${path}/${dirent.name}`);
         }

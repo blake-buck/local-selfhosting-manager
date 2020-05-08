@@ -74,6 +74,7 @@ export async function refresh(req, res){
     const applicationsFolderContents = await fs.readdir(applicationsPath);
     const applicationsInDatabase     = await returnTable(APPLICATIONS_TABLE);
 
+    // if the app is in the applications folder and not in the database, add to database
     const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.title === appTitle));
     
     for(let i=0; i < untrackedApplicationTitles.length; i++){
@@ -87,6 +88,7 @@ export async function refresh(req, res){
 export async function applicationSetup(req, res){
     const { commands, application } = req.body;
 
+    // run the user given commands e.g. "npm install" in the selected application
     exec(
         commands, 
         {
@@ -126,6 +128,7 @@ export async function deleteApplication(req, res){
     // delete application directory from applications folder
     await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
 
+    // stop the daemon running the application
     pm2.stop(application.id, (err) => {
         if(err){
             console.log(err)
@@ -146,6 +149,7 @@ export async function deleteApplication(req, res){
 }
 
 export async function startApplication(req, res){
+    // daemonize given application
     const { applicationPath, applicationName, startScript, scriptArgs } = req.body;
     
     pm2.start(
@@ -168,6 +172,7 @@ export async function startApplication(req, res){
 }
 
 export async function stopApplication(req, res){
+    // stop application daemon
     const { applicationName } = req.body;
 
     pm2.stop(applicationName, (err, proc) => {
@@ -182,6 +187,7 @@ export async function stopApplication(req, res){
 }
 
 export async function addServingFile(req, res){
+    // adds http server file to given application
     const {applicationPath, serveFrom, rerouteDefaultPathTo, port} = req.body;
     
     await createServingFile(applicationPath, serveFrom, rerouteDefaultPathTo, port);
@@ -190,6 +196,7 @@ export async function addServingFile(req, res){
 }
 
 export async function autoRestartApplications(req, res){
+    // creates a pm2 dump file containing the current running applications
     pm2.dump(
         (err, result) => {
             if(err){
@@ -207,6 +214,7 @@ export async function autoRestartApplications(req, res){
 export async function addToStartup(req, res){
     if(OPERATING_SYSTEM === 'WINDOWS'){
 
+        // add a batch file to windows startup that runs pm2 resurrect 
         try{
             const username = await getWindowsUser();
 
@@ -233,6 +241,8 @@ export async function addToStartup(req, res){
 
 export async function removeFromStartup(req, res){
     if(OPERATING_SYSTEM === 'WINDOWS'){
+
+        // remove pm2 resurrect batch file from windows startup
         try{
             const username = await getWindowsUser();
             const startupFilePath = `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\local-selfhosting-manager-reboot.bat`;
@@ -260,16 +270,16 @@ export async function removeFromStartup(req, res){
 export async function createShortcut(req, res){
     if(OPERATING_SYSTEM === 'WINDOWS'){
 
+        // Create a shortcut file on user desktop
         try{
             const username = await getWindowsUser();
             const { shortcutName, shortcutUrl, applicationId } = req.body;
-
-            
             
             const shortcutPath = `C:\\Users\\${username}\\Desktop\\${shortcutName}.url`;
             
             let shortcutFileContents = `[InternetShortcut]\nURL=${shortcutUrl}`;
 
+            // if the application has a favicon, add it to the shortcut
             const favicon = (await queryItemById(APPLICATIONS_TABLE, applicationId)).favicon;
             if(favicon){
                 shortcutFileContents += `\nIconIndex=0\nIconFile=${favicon}`
