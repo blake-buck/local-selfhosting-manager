@@ -1,6 +1,4 @@
-function applicationDiv(){
-    return document.querySelector('.application-cards');
-}
+const applicationDiv = () => document.querySelector('.application-cards');
 
 function createCard(application:Application){
     const card = document.createElement('div');

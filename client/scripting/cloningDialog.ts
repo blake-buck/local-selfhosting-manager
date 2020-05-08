@@ -1,18 +1,23 @@
-function openCloningDialog(){
-    document.querySelector('.clone-app-dialog-backdrop').classList.remove('displayFlex');
-    document.querySelector('.clone-app-dialog-backdrop .step-1').classList.remove('displayFlex');
-    document.querySelector('.clone-app-dialog-backdrop .step-2').classList.remove('displayFlex');
-    document.querySelector('.clone-app-dialog-backdrop .step-2').classList.remove('displayFlex');
+const dialogBackdrop = () => document.querySelector('.clone-app-dialog-backdrop');
+const step1 = () => document.querySelector('.clone-app-dialog-backdrop .step-1');
+const step2 = () => document.querySelector('.clone-app-dialog-backdrop .step-2');
+const step3 = () => document.querySelector('.clone-app-dialog-backdrop .step-3');
 
-    document.querySelector('.clone-app-dialog-backdrop').classList.add('displayFlex');
-    document.querySelector('.clone-app-dialog-backdrop .step-1').classList.add('displayFlex');
+function openCloningDialog(){
+    dialogBackdrop().classList.remove('displayFlex');
+    step1().classList.remove('displayFlex');
+    step2().classList.remove('displayFlex');
+    step3().classList.remove('displayFlex');
+
+    dialogBackdrop().classList.add('displayFlex');
+    step1().classList.add('displayFlex');
 }
 
 async function closeCloningDialog(){
-    document.querySelector('.clone-app-dialog-backdrop').classList.remove('displayFlex');
-    document.querySelector('.clone-app-dialog-backdrop .step-1').classList.remove('displayFlex');
-    document.querySelector('.clone-app-dialog-backdrop .step-2').classList.remove('displayFlex');
-    document.querySelector('.clone-app-dialog-backdrop .step-2').classList.remove('displayFlex');
+    dialogBackdrop().classList.remove('displayFlex');
+    step1().classList.remove('displayFlex');
+    step2().classList.remove('displayFlex');
+    step3().classList.remove('displayFlex');
 }
 
 async function cloneRepository(){
@@ -20,8 +25,8 @@ async function cloneRepository(){
     const repoUrl = repoInput.value;
 
     if(repoUrl){
-        document.querySelector('.clone-app-dialog-backdrop .step-1').classList.remove('displayFlex');
-        document.querySelector('.clone-app-dialog-backdrop .step-2').classList.add('displayFlex');
+        step1().classList.remove('displayFlex');
+        step2().classList.add('displayFlex');
     
     
         const body = {repoUrl};
@@ -39,8 +44,8 @@ async function cloneRepository(){
     
         response = (await response.json());
     
-        document.querySelector('.clone-app-dialog-backdrop .step-2').classList.remove('displayFlex');
-        document.querySelector('.clone-app-dialog-backdrop .step-3').classList.add('displayFlex');
+        step2().classList.remove('displayFlex');
+        step3().classList.add('displayFlex');
     
         let applications: any = await fetch('/api/applications');
         applications = (await applications.json()).table;
