@@ -1,5 +1,6 @@
 @import 'reset.css';
 @import 'cloning-dialog.css';
+@import 'config-dialog.css';
 
 body{
     color: #444444;
@@ -114,4 +115,15 @@ header.application-header button{
 
 button:hover, button:active{
     cursor:pointer;
+}
+
+input{
+    font-size:1.4em;
+    background: #eeeeee;
+    outline: none;
+    border:1px solid #222222;
+    color:#222222;
+
+    padding:5px;
+    border-radius: 5px;
 }

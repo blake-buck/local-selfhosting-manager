@@ -30,16 +30,21 @@ function createCard(application:Application){
     <footer>
         <button>Start Application</button>
         <button>Stop Application</button>
-        <button>Configure Application</button>
+        <button id='configureApplication'>Configure Application</button>
         <button>Create Shortcut</button>
         <button id='deleteApplication'>Delete Application</button>
     </footer>
-    `
+    `;
 
     // add event listeners to card buttons
-    card.querySelector('#deleteApplication').addEventListener('click', () => deleteApplication(application.id));
+    card.querySelector('#configureApplication').addEventListener('click', () => {
+        openConfigDialog()
+    });
+    card.querySelector('#deleteApplication').addEventListener('click', () => {
+        deleteApplication(application.id)
+    });
 
-    return card
+    return card;
 }
 
 

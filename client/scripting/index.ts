@@ -1,4 +1,5 @@
 window.addEventListener('load', async (e) => {
+
     // initially render application cards
     let applications: any = await fetch('/api/applications');
     applications = (await applications.json()).table;

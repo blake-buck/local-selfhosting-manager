@@ -1,0 +1,77 @@
+.config-dialog-backdrop{
+    position:fixed;
+    top:0px;
+    left:0px;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0, 0, 0, 0.4);
+
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.config-dialog-header{
+    text-align: center;
+    font-size:1.5em;
+}
+
+.config-dialog-body{
+    background: #eeeeee;
+
+    padding:15px;
+    border-radius: 5px;
+
+    width:30%;
+    min-width: 350px;
+
+    height:50%;
+
+    display:flex;
+    flex-direction:column;
+    justify-content: space-between;
+}
+
+.config-application-setup{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.config-application-setup input{
+    width:90%;
+}
+.config-application-setup button{
+    align-self: flex-end;
+}
+
+
+.config-footer{
+    display:flex;
+    justify-content: flex-end;
+}
+
+.config-dialog-body button{
+    background: #eeeeee;
+    color:#444444;
+
+    font-size:1.1em;
+    
+    padding:10px;
+    margin:5px;
+    
+
+    border:none;
+    border-radius: 5px;
+
+    text-transform: uppercase;
+}
+
+.config-dialog-body button:hover{
+    filter:contrast(90%);
+}
+.config-dialog-body button:active{
+    filter:contrast(70%);
+}
