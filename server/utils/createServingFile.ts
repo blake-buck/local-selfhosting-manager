@@ -10,7 +10,7 @@ export async function createServingFile(applicationPath, serveFrom, rerouteDefau
     // rerouteDefaultPathTo - redirects '/' requests to given path
     // port - the localhost port to run on
     await fs.writeFile(
-        path.join(__dirname, '../../applications', applicationPath, 'local-selfhosting-serve-file.js'),
+        path.join(applicationPath, 'local-selfhosting-serve-file.js'),
         `
         const http = require('http');
         const fs   = require('fs').promises;

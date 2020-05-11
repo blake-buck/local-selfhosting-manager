@@ -38,7 +38,7 @@ function createCard(application:Application){
 
     // add event listeners to card buttons
     card.querySelector('#configureApplication').addEventListener('click', () => {
-        openConfigDialog()
+        openConfigDialog(application);
     });
     card.querySelector('#deleteApplication').addEventListener('click', () => {
         deleteApplication(application.id)

@@ -188,9 +188,9 @@ export async function stopApplication(req, res){
 
 export async function addServingFile(req, res){
     // adds http server file to given application
-    const {applicationPath, serveFrom, rerouteDefaultPathTo, port} = req.body;
-    
-    await createServingFile(applicationPath, serveFrom, rerouteDefaultPathTo, port);
+    const {applicationId, serveFrom, rerouteDefaultPathTo, port} = req.body;
+
+    await createServingFile(path.join(applicationsPath, applicationId), serveFrom, rerouteDefaultPathTo, port);
 
     res.status(200).send({status:200, message:'Serve file has been created.'})
 }
