@@ -28,8 +28,8 @@ function createCard(application:Application){
     </header>
 
     <footer>
-        <button>Start Application</button>
-        <button>Stop Application</button>
+        <button id='startApplication'>Start Application</button>
+        <button id='stopApplication'>Stop Application</button>
         <button id='configureApplication'>Configure Application</button>
         <button>Create Shortcut</button>
         <button id='deleteApplication'>Delete Application</button>
@@ -37,6 +37,8 @@ function createCard(application:Application){
     `;
 
     // add event listeners to card buttons
+    card.querySelector('#startApplication').addEventListener('click', () => startApplication(application))
+    card.querySelector('#stopApplication').addEventListener('click', () => stopApplication(application))
     card.querySelector('#configureApplication').addEventListener('click', () => {
         openConfigDialog(application);
     });
@@ -83,4 +85,45 @@ async function deleteApplication(id:string){
     const applications = (await response.json()).table;
 
     renderApplicationCards(applications);
+}
+
+async function startApplication(application:Application, scriptArgs?:string){
+    const request = await fetch(
+        '/api/application/start',
+        {
+            method:'POST',
+            body:JSON.stringify({
+                applicationPath:application.id,
+                applicationName:application.title,
+                startScript:application.startScript,
+                scriptArgs:scriptArgs ? scriptArgs : ''
+            }),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        }
+    );
+
+    const response = await request.json();
+
+    console.log(response);
+}
+
+async function stopApplication(application:Application){
+    const request = await fetch(
+        '/api/application/stop',
+        {
+            method:'POST',
+            body:JSON.stringify({
+                applicationName:application.id
+            }),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        }
+    );
+
+    const response = await request.json();
+
+    console.log(response);
 }

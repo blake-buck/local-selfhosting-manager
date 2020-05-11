@@ -40,6 +40,25 @@ function openConfigDialog(application){
     dialogBody.appendChild(applicationSetup);
 
 
+    // modify application start script
+    const applicationStartScriptDiv = document.createElement('div');
+    applicationStartScriptDiv.classList.add('config-application-start-script');
+
+    const applicationStartScriptInput = document.createElement('input');
+    applicationStartScriptInput.id = 'applicationStartScriptInput';
+    applicationStartScriptInput.placeholder = 'Application Start Script';
+
+    applicationStartScriptDiv.appendChild(applicationStartScriptInput);
+
+    const applicationStartScriptButton = document.createElement('button');
+    applicationStartScriptButton.innerText = 'modify';
+    applicationStartScriptButton.addEventListener('click', () => modifyStartScript());
+
+    applicationStartScriptDiv.appendChild(applicationStartScriptButton);
+
+    dialogBody.appendChild(applicationStartScriptDiv);
+
+
 
     // create "add serving file section"
     const addServingFileDiv = document.createElement('div');
@@ -140,4 +159,23 @@ async function addServingFile(){
     const response = await request.json();
 
     console.log(response);
+}
+
+async function modifyStartScript(){
+    const startScriptText = document.querySelector('#applicationStartScriptInput')['value'];
+
+    const request = await fetch(
+        `/api/application/${configDialogState.application.id}`,
+        {
+            method:'PUT',
+            body:JSON.stringify({
+                updatedValues:{
+                    startScript:startScriptText
+                }
+            }),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        }
+    );
 }

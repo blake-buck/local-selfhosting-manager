@@ -2,6 +2,7 @@ interface Application{
     id:string;
     title:string;
     favicon:string | undefined;
+    startScript:string | undefined;
 }
 
 // for whatever reason default Elements dont have the value property; this custom interface fixes that

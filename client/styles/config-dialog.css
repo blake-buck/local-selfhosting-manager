@@ -47,6 +47,15 @@
     align-self: flex-end;
 }
 
+.config-application-start-script{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.config-application-start-script button{
+    align-self: flex-end;
+}
+
 .config-serving-file{
     display: flex;
     flex-direction: column;
@@ -83,3 +92,4 @@
 .config-dialog-body button:active{
     filter:contrast(70%);
 }
+
