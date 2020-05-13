@@ -38,10 +38,6 @@
     display:flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-}
-.config-application-setup input{
-    width:90%;
 }
 .config-application-setup button{
     align-self: flex-end;

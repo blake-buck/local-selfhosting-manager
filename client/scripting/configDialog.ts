@@ -27,28 +27,39 @@ function openConfigDialog(application){
 
 
     // create an application setup section
-    const applicationSetup = document.createElement('div');
-    applicationSetup.classList.add('config-application-setup');
+    const applicationSetupDiv = document.createElement('div');
+    applicationSetupDiv.classList.add('config-application-setup');
+
+    const applicationChildDirectoryInput = document.createElement('input');
+    applicationChildDirectoryInput.id = 'applicationChildDirectoryInput';
+    applicationChildDirectoryInput.placeholder = 'Child Directory';
 
     const commandsInput = document.createElement('input');
+    commandsInput.id = 'commandsInput';
+    commandsInput.placeholder = 'Commands to Run';
+
     const runCommands = document.createElement('button');
     runCommands.innerText = 'Run Commands';
+    runCommands.addEventListener('click', () => applicationSetup(application.id))
 
-    applicationSetup.appendChild(commandsInput);
-    applicationSetup.appendChild(runCommands);
+    applicationSetupDiv.appendChild(applicationChildDirectoryInput);
+    applicationSetupDiv.appendChild(commandsInput);
+    applicationSetupDiv.appendChild(runCommands);
 
-    dialogBody.appendChild(applicationSetup);
+    dialogBody.appendChild(applicationSetupDiv);
 
 
     // modify application start script
     const applicationStartScriptDiv = document.createElement('div');
     applicationStartScriptDiv.classList.add('config-application-start-script');
 
+
     const applicationStartScriptInput = document.createElement('input');
     applicationStartScriptInput.id = 'applicationStartScriptInput';
     applicationStartScriptInput.placeholder = 'Application Start Script';
 
     applicationStartScriptDiv.appendChild(applicationStartScriptInput);
+
 
     const applicationStartScriptButton = document.createElement('button');
     applicationStartScriptButton.innerText = 'modify';
@@ -115,14 +126,19 @@ function closeConfigDialog(){
     document.querySelector('body').removeChild(document.querySelector('.config-dialog-backdrop'));
 }
 
-async function runCommands(){
+async function applicationSetup(application:string){
+    const commands = document.querySelector('#commandsInput')['value'];
+    const childDirectory = document.querySelector('#applicationChildDirectoryInput')['value'];
+
+    console.log('APPLICATION SETUP ', commands, childDirectory)
+
     const request = await fetch(
         '/api/application/setup',
         {
             method:'POST',
             body:JSON.stringify({
-                commands:'',
-                application:''
+                commands,
+                application: childDirectory ? `${application}/${childDirectory}`: application
             }),
             headers:{
                 'Content-Type':'application/json'
@@ -132,7 +148,7 @@ async function runCommands(){
 
     const response = await request.json();
 
-    // 
+    console.log(response);
 }
 
 async function addServingFile(){
