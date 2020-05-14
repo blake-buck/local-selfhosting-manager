@@ -14,6 +14,7 @@ import { OPERATING_SYSTEM } from '../environment';
 import { getWindowsUser } from './utils/getWindowsUser';
 import { applicationsPath } from './utils/paths';
 import { findFavicon } from './utils/findFavicon';
+import { autoRestartApplications } from './utils/autoRestartApplications';
 
 
 const APPLICATIONS_TABLE = 'applications';
@@ -159,13 +160,21 @@ export async function startApplication(req, res){
             args:   scriptArgs,
             cwd:    path.join(__dirname, `../../applications/${applicationPath}`)
         },
-        (err, proc) => {
+        async (err, proc) => {
             if(err){
                 console.log(err);
                 res.status(500).send({status:500, message:`Error starting ${applicationName}`});
             }
             else if(proc){
-                res.status(200).send({status:200, message:`${applicationName} is started!`})
+
+                try{
+                    await autoRestartApplications();
+                    res.status(200).send({status:200, message:`${applicationName} is started!`});
+                }
+                catch(e){
+                    res.status(500).send({status:500, message:e})
+                }
+                
             }
         }
     );
@@ -175,13 +184,19 @@ export async function stopApplication(req, res){
     // stop application daemon
     const { applicationName } = req.body;
 
-    pm2.stop(applicationName, (err, proc) => {
+    pm2.stop(applicationName, async (err, proc) => {
         if(err){
             console.log(err);
             res.status(500).send({status:500, message:`Error stopping ${applicationName}`});
         }
         else if(proc){
-            res.status(200).send({status:200, message:`${applicationName} is stopped!`})
+            try{
+                await autoRestartApplications();
+                res.status(200).send({status:200, message:`${applicationName} is stopped!`});
+            }
+            catch(e){
+                res.status(500).send({status:500, message:e});
+            }
         }
     })
 }
@@ -193,22 +208,6 @@ export async function addServingFile(req, res){
     await createServingFile(path.join(applicationsPath, applicationId), serveFrom, rerouteDefaultPathTo, port);
 
     res.status(200).send({status:200, message:'Serve file has been created.'})
-}
-
-export async function autoRestartApplications(req, res){
-    // creates a pm2 dump file containing the current running applications
-    pm2.dump(
-        (err, result) => {
-            if(err){
-                console.log(err);
-                res.status(500).send({status:500, message:'An error occured. Check that there are running applications.'})
-            }
-            else if(result){
-                res.status(200).send({status:200, message:'Running applications are set to restart on a computer reboot.'});
-            }
-        }
-    )
-    
 }
 
 export async function addToStartup(req, res){

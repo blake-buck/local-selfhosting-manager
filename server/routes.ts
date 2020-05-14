@@ -1,4 +1,4 @@
-import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile, autoRestartApplications, createShortcut, addToStartup, removeFromStartup, updateApplication} from './controllers';
+import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile, createShortcut, addToStartup, removeFromStartup, updateApplication} from './controllers';
 
 export function useApplicationRoutes(app){
 
@@ -51,11 +51,6 @@ export function useApplicationRoutes(app){
     app.post(
         '/api/application/serve-file',
         addServingFile
-    );
-
-    app.post(
-        '/api/applications/auto-restart',
-        autoRestartApplications
     );
 
     app.post(
