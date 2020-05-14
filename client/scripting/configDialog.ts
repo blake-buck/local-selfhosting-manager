@@ -99,6 +99,24 @@ function openConfigDialog(application){
     dialogBody.appendChild(addServingFileDiv);
 
 
+    // create shortcut button
+    const createShortcutDiv = document.createElement('div');
+    createShortcutDiv.classList.add('create-shortcut-div');
+
+    const createShortcutInput = document.createElement('input');
+    createShortcutInput.placeholder = 'Application Port Number';
+    createShortcutInput.id = 'createShortcutInput';
+
+    const createShortcutButton = document.createElement('button');
+    createShortcutButton.innerText = 'Create Shortcut';
+    createShortcutButton.style.marginLeft = 'auto';
+
+    createShortcutButton.addEventListener('click', () => createApplicationShortcut(application));
+
+    createShortcutDiv.append(createShortcutInput);
+    createShortcutDiv.append(createShortcutButton);
+
+    dialogBody.append(createShortcutDiv)
 
     // create a footer with a close button
     const footer = document.createElement('footer');
@@ -194,4 +212,27 @@ async function modifyStartScript(){
             }
         }
     );
+}
+
+async function createApplicationShortcut(application){
+    const portNumber = document.querySelector('#createShortcutInput')['value'];
+
+    const request = await fetch(
+        '/api/application/create-shortcut',
+        {
+            method:'POST',
+            body:JSON.stringify({
+                shortcutName:application.id, 
+                shortcutUrl:`http://localhost:${portNumber}`, 
+                applicationId:application.id
+            }),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        }
+    );
+
+    const response = await request.json();
+
+    console.log(response);
 }

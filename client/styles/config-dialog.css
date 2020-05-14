@@ -34,7 +34,7 @@
     justify-content: space-between;
 }
 
-.config-application-setup{
+.config-application-setup, .create-shortcut-div{
     display:flex;
     flex-direction: column;
     justify-content: center;
