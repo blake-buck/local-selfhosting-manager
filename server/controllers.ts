@@ -126,8 +126,8 @@ export async function deleteApplication(req, res){
     await deleteItemById(APPLICATIONS_TABLE, id);
     
 
-    // delete application directory from applications folder
-    await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+    
+
 
     // stop the daemon running the application
     pm2.stop(application.id, (err) => {
@@ -136,11 +136,15 @@ export async function deleteApplication(req, res){
         }
     });
 
+    // delete application directory from applications folder
+    await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+
     // clean up any directories that dont get deleted -- not sure how i feel about this; deleteEverythingInDirectory should delete everything in one pass
     try{
         if(await fs.readdir(`${applicationsPath}/${application.title}`)){
             await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
         }
+        await fs.rmdir(`${applicationsPath}/${application.title}`);
     }
     catch(e){
         console.log('ERROR ', e);
