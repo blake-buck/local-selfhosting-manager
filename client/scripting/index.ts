@@ -12,4 +12,7 @@ window.addEventListener('load', async (e) => {
     document.querySelector('#cloneRepository').addEventListener('click', cloneRepository);
 
     document.querySelector('#refreshApplications').addEventListener('click', refreshApplications);
+
+    document.querySelector('#removeFromStart').addEventListener('click', () => stopAutoStartApplications());
+    document.querySelector('#addToStart').addEventListener('click', () => autoStartApplications());
 });

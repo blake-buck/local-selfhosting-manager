@@ -127,3 +127,29 @@ async function stopApplication(application:Application){
 
     console.log(response);
 }
+
+async function autoStartApplications(){
+    const request = await fetch(
+        '/api/startup/add',
+        {
+            method:'POST'
+        }
+    );
+
+    const response = await request.json();
+
+    console.log(response);
+}
+
+async function stopAutoStartApplications(){
+    const request = await fetch(
+        '/api/startup/remove',
+        {
+            method:'POST'
+        }
+    );
+
+    const response = await request.json();
+
+    console.log(response);
+}
