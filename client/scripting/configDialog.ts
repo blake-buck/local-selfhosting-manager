@@ -77,10 +77,34 @@ function openConfigDialog(application){
             `
         );
 
-    document.querySelector('.config-application-setup button').addEventListener('click', () => applicationSetup(application.id));
-    document.querySelector('.config-application-start-script button').addEventListener('click', () => modifyStartScript());
-    document.querySelector('.config-serving-file button').addEventListener('click', addServingFile);
-    document.querySelector('.create-shortcut-div button').addEventListener('click', () => createApplicationShortcut(application));
+    document.querySelector('.config-application-setup button').addEventListener('click', () => {
+        const commands = document.querySelector('#commandsInput')['value'];
+        const childDirectory = document.querySelector('#applicationChildDirectoryInput')['value'];
+        applicationSetup(application.id, commands, childDirectory)
+    });
+
+    document.querySelector('.config-application-start-script button').addEventListener('click', () => {
+        const startScriptText = document.querySelector('#applicationStartScriptInput')['value'];
+        modifyStartScript(startScriptText);
+    });
+
+    document.querySelector('.config-serving-file button').addEventListener('click', () => {
+        const directoryToServeText = document.querySelector('#directoryToServe')['value']; 
+        const rerouteDefaultPathToText = document.querySelector('#rerouteDefaultPathTo')['value']; 
+        const portInputText = document.querySelector('#portInput')['value']; 
+        addServingFile(
+            configDialogState.application.id,
+            directoryToServeText,
+            rerouteDefaultPathToText,
+            portInputText
+        );
+    });
+
+    document.querySelector('.create-shortcut-div button').addEventListener('click', () => {
+        const portNumber = document.querySelector('#createShortcutInput')['value'];
+        createApplicationShortcut(application, portNumber);
+    });
+    
     document.querySelector('.config-footer button').addEventListener('click', closeConfigDialog);
 
 }
@@ -92,12 +116,7 @@ function closeConfigDialog(){
     document.querySelector('body').removeChild(document.querySelector('.config-dialog-backdrop'));
 }
 
-async function applicationSetup(application:string){
-    const commands = document.querySelector('#commandsInput')['value'];
-    const childDirectory = document.querySelector('#applicationChildDirectoryInput')['value'];
-
-    console.log('APPLICATION SETUP ', commands, childDirectory)
-
+async function applicationSetup(application:string, commands:string, childDirectory:string){
     const request = await fetch(
         '/api/application/setup',
         {
@@ -117,20 +136,16 @@ async function applicationSetup(application:string){
     console.log(response);
 }
 
-async function addServingFile(){
-    const portInputText = document.querySelector('#portInput')['value']; 
-    const directoryToServeText = document.querySelector('#directoryToServe')['value']; 
-    const rerouteDefaultPathToText = document.querySelector('#rerouteDefaultPathTo')['value']; 
-
+async function addServingFile(applicationId:string, serveFrom:string, rerouteDefaultPathTo:string, port:string){
     const request = await fetch(
         '/api/application/serve-file',
         {
             method:'POST',
             body:JSON.stringify({
-                applicationId:configDialogState.application.id,
-                serveFrom:directoryToServeText ? directoryToServeText : '.',
-                rerouteDefaultPathTo:rerouteDefaultPathToText,
-                port:portInputText
+                applicationId,
+                serveFrom: serveFrom ? serveFrom : '.',
+                rerouteDefaultPathTo,
+                port
             }),
             headers:{
                 'Content-Type':'application/json'
@@ -143,16 +158,14 @@ async function addServingFile(){
     console.log(response);
 }
 
-async function modifyStartScript(){
-    const startScriptText = document.querySelector('#applicationStartScriptInput')['value'];
-
+async function modifyStartScript(startScript:string){
     const request = await fetch(
         `/api/application/${configDialogState.application.id}`,
         {
             method:'PUT',
             body:JSON.stringify({
                 updatedValues:{
-                    startScript:startScriptText
+                    startScript
                 }
             }),
             headers:{
@@ -162,9 +175,7 @@ async function modifyStartScript(){
     );
 }
 
-async function createApplicationShortcut(application){
-    const portNumber = document.querySelector('#createShortcutInput')['value'];
-
+async function createApplicationShortcut(application, portNumber:string){
     const request = await fetch(
         '/api/application/create-shortcut',
         {
