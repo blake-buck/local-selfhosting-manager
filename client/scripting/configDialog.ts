@@ -12,6 +12,7 @@ function openConfigDialog(application){
     // create dialog body
     const dialogBody = document.createElement('div');
     dialogBody.classList.add('config-dialog-body');
+    dialogBody.classList.add('dialog-body');
 
     backdrop.appendChild(dialogBody);
 

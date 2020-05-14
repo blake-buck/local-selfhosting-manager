@@ -13,18 +13,6 @@
     align-items: center;
 }
 
-.clone-app-dialog{
-    background: #eeeeee;
-
-    padding:15px;
-    border-radius: 5px;
-
-    width:30%;
-    min-width: 350px;
-
-    height:50%;
-}
-
 .step-1, .step-2, .step-3{
     height:100%;
 
@@ -33,31 +21,18 @@
     justify-content: space-around;
 }
 
-.step-1 h3, .step-2 h3, .step-3 h3{
+.clone-app-dialog h3{
     font-size:1.8em;
     margin:10px;
     font-weight: bold;
-
     text-transform: uppercase;
 }
 
-.step-1{
+.step-1, .step-2, .step-3{
     display:none;
-}
-
-.step-1 input{
-    font-size:1.4em;
-    background: #eeeeee;
-    outline: none;
-    border:1px solid #222222;
-    color:#222222;
-
-    padding:5px;
-    border-radius: 5px;
 }
 
 .step-2{
-    display:none;
     justify-content: space-between;
 }
 
@@ -71,46 +46,21 @@
 
     margin:auto;
 }
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.step-3{
-    display:none;
-}
 
 .step-3 p{
     font-size:7em;
     text-align:center;
 }
 
-.clone-app-dialog button{
-    background: #eeeeee;
-    color:#444444;
-
-    font-size:1.1em;
-    
-    padding:10px;
-    margin:5px;
-    
-
-    border:none;
-    border-radius: 5px;
-
-    text-transform: uppercase;
-}
-
 .clone-app-dialog span{
     margin-left:auto;
-}
-.clone-app-dialog button:hover{
-    filter:contrast(90%);
-}
-.clone-app-dialog button:active{
-    filter:contrast(70%);
 }
 
 .displayFlex{
     display:flex;
 }
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
