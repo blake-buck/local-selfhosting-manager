@@ -8,8 +8,6 @@ window.addEventListener('load', async (e) => {
 
     // add event listeners to various buttons
     document.querySelector('#openCloningDialog').addEventListener('click', openCloningDialog);
-    document.querySelectorAll('#closeCloningDialog').forEach(el => el.addEventListener('click', closeCloningDialog));
-    document.querySelector('#cloneRepository').addEventListener('click', cloneRepository);
 
     document.querySelector('#refreshApplications').addEventListener('click', refreshApplications);
 

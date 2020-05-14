@@ -1,6 +1,20 @@
 {
     "compilerOptions": {
-        "outDir": "dist"
+        "outDir": "dist",
+        "target":"ES5",
+        "typeRoots": [
+            "@types"
+        ],
+        "moduleResolution": "node",
+        "baseUrl": ".",
+        "paths": {
+            "pm2" : [
+                "node_modules/pm2/types/index.d.ts"
+            ],
+            "dotenv":[
+                "node_modules/dotenv/types/index.d.ts"
+            ]
+        }
     },
     "exclude": [
         "node_modules",

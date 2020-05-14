@@ -8,7 +8,7 @@
 
     background:rgba(0, 0, 0, 0.4);
 
-    display:none;
+    display:flex;
     justify-content: center;
     align-items: center;
 }
@@ -26,10 +26,6 @@
     margin:10px;
     font-weight: bold;
     text-transform: uppercase;
-}
-
-.step-1, .step-2, .step-3{
-    display:none;
 }
 
 .step-2{
@@ -56,9 +52,6 @@
     margin-left:auto;
 }
 
-.displayFlex{
-    display:flex;
-}
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
