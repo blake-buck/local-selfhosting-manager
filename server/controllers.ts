@@ -361,11 +361,13 @@ export async function createShortcut(req, res){
         // Create a shortcut file on user desktop
         try{
             const username = await getWindowsUser();
-            const { shortcutName, shortcutUrl, applicationId } = req.body;
+            const { shortcutName, applicationId, port } = req.body;
+
+            await updateItemById(APPLICATIONS_TABLE, applicationId, {shortcutPort:port})
             
             const shortcutPath = `C:\\Users\\${username}\\Desktop\\${shortcutName}.url`;
             
-            let shortcutFileContents = `[InternetShortcut]\nURL=${shortcutUrl}`;
+            let shortcutFileContents = `[InternetShortcut]\nURL=http://localhost:${port}`;
 
             // if the application has a favicon, add it to the shortcut
             const favicon = (await queryItemById(APPLICATIONS_TABLE, applicationId)).favicon;

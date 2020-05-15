@@ -22,7 +22,7 @@ function openConfigDialog(application){
     // modify application start script
     const configSartScriptTemplate = `
     <div class='config-application-start-script'>
-        <input id='applicationStartScriptInput' placeholder='Application Start Script' />
+        <input id='applicationStartScriptInput' value='${application.startScript ? application.startScript : ''}' placeholder='Application Start Script' />
         <button>modify</button>
     </div>
     `
@@ -43,7 +43,7 @@ function openConfigDialog(application){
     // create shortcut button
     const createShortcutTemplate = `
     <div class='create-shortcut-div'>
-        <input id='createShortcutInput' placeholder='Application Port Number' />
+        <input id='createShortcutInput' value='${application.shortcutPort ? application.shortcutPort : ''}' placeholder='Application Port Number' />
         <button>Create Shortcut</button>
     </div>
     `
@@ -182,7 +182,7 @@ async function createApplicationShortcut(application, portNumber:string){
             method:'POST',
             body:JSON.stringify({
                 shortcutName:application.id, 
-                shortcutUrl:`http://localhost:${portNumber}`, 
+                port:portNumber, 
                 applicationId:application.id
             }),
             headers:{
