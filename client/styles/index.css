@@ -2,6 +2,7 @@
 @import 'cloning-dialog.css';
 @import 'config-dialog.css';
 @import 'applications.css';
+@import 'snackbars.css';
 
 body{
     color: #444444;

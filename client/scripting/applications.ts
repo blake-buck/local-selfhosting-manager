@@ -122,7 +122,15 @@ async function startApplication(application:Application, scriptArgs?:string){
     const response = await request.json();
 
     console.log(response);
-    renderApplicationCards(response.table);
+    if(response.status === 200){
+        renderApplicationCards(response.table);
+
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
+    
 }
 
 async function stopApplication(application:Application){
@@ -142,7 +150,15 @@ async function stopApplication(application:Application){
     const response = await request.json();
 
     console.log(response);
-    renderApplicationCards(response.table);
+    if(response.status === 200){
+        renderApplicationCards(response.table);
+
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
+    
 
 }
 

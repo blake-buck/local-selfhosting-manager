@@ -10,3 +10,12 @@ interface Application{
 interface InputElement extends Element{
     value:string;
 }
+
+interface Snackbar{
+    id:number;
+    message:string;
+    color: snackbarColor;
+    timeout?:number;
+}
+
+type snackbarColor = 'green' | 'red' | 'gray';

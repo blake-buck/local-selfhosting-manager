@@ -1,0 +1,39 @@
+.snackbars{
+    position:fixed;
+    top:0px;
+    right:0px;
+
+    display:flex;
+    flex-direction: column;
+
+}
+
+.snackbar{
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width:30vw;
+
+    padding:5px 10px;
+    margin:5px;
+}
+.snackbar.gray, .snackbar.gray button{
+    background:lightgray;
+}
+.snackbar.red, .snackbar.red button{
+    background:lightcoral;
+}
+.snackbar.green, .snackbar.green button{
+    background:lightgreen;
+}
+
+.snackbar button{
+    margin:0px;
+}
+
+.snackbar span{
+    font-size:1.1em;
+    font-family: sans-serif;
+
+}
