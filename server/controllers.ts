@@ -80,7 +80,7 @@ export async function refresh(req, res){
     
     for(let i=0; i < untrackedApplicationTitles.length; i++){
         const untrackedAppTitle = untrackedApplicationTitles[i];
-        await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {title:untrackedAppTitle, favicon: await findFavicon(untrackedAppTitle)})
+        await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle)})
     }
     
     res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`, table: await returnTable(APPLICATIONS_TABLE)});
