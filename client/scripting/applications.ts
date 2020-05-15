@@ -20,13 +20,27 @@ function createCard(application:Application){
         `
     }
 
-    // add the application title and action buttons to the card
+    // add the application title 
     card.innerHTML += 
     `
     <header>
         <span>${application.id}</span>
     </header>
+    `;
 
+    // if application has a status, add it to the card
+    if(application.status){
+        card.innerHTML +=
+        `
+        <div class='application-status'>
+            <span class='${application.status}'>${application.status}</span>
+        </div>
+        `
+    }
+
+    // add action buttons to the card
+    card.innerHTML +=
+    `
     <footer>
         <button id='startApplication'>Start Application</button>
         <button id='stopApplication'>Stop Application</button>
@@ -34,7 +48,7 @@ function createCard(application:Application){
         <button>Create Shortcut</button>
         <button id='deleteApplication'>Delete Application</button>
     </footer>
-    `;
+    `
 
     // add event listeners to card buttons
     card.querySelector('#startApplication').addEventListener('click', () => startApplication(application))
@@ -109,6 +123,7 @@ async function startApplication(application:Application, scriptArgs?:string){
     const response = await request.json();
 
     console.log(response);
+    renderApplicationCards(response.table);
 }
 
 async function stopApplication(application:Application){
@@ -128,6 +143,8 @@ async function stopApplication(application:Application){
     const response = await request.json();
 
     console.log(response);
+    renderApplicationCards(response.table);
+
 }
 
 async function autoStartApplications(){

@@ -116,7 +116,7 @@ export async function refresh(req, res){
         
         for(let i=0; i < untrackedApplicationTitles.length; i++){
             const untrackedAppTitle = untrackedApplicationTitles[i];
-            await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle)})
+            await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle), status:'STOPPED'})
         }
         
         res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`, table: await returnTable(APPLICATIONS_TABLE)});
@@ -239,7 +239,8 @@ export async function startApplication(req, res){
 
                     try{
                         await autoRestartApplications();
-                        res.status(200).send({status:200, message:`${applicationName} is started!`});
+                        await updateItemById(APPLICATIONS_TABLE, applicationName, {status:'RUNNING'});
+                        res.status(200).send({status:200, message:`${applicationName} is started!`, table: await returnTable(APPLICATIONS_TABLE)});
                     }
                     catch(e){
                         res.status(500).send({status:500, message:e})
@@ -268,7 +269,8 @@ export async function stopApplication(req, res){
             else if(proc){
                 try{
                     await autoRestartApplications();
-                    res.status(200).send({status:200, message:`${applicationName} is stopped!`});
+                    await updateItemById(APPLICATIONS_TABLE, applicationName, {status:'STOPPED'});
+                    res.status(200).send({status:200, message:`${applicationName} is stopped!`, table: await returnTable(APPLICATIONS_TABLE)});
                 }
                 catch(e){
                     res.status(500).send({status:500, message:e});

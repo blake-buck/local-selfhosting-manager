@@ -33,7 +33,7 @@ function openConfigDialog(application){
     const addServingFileTemplate = `
     <div class='config-serving-file'>
         <input id='directoryToServe' placeholder='Directory to serve e.g. build, dist. Leave blank if root directory' />
-        <input id='portInput' placeholder='Directory to serve e.g. build, dist. Leave blank if root directory' />
+        <input id='portInput' placeholder='Port to host on' />
         <input id='rerouteDefaultPathTo' placeholder='Reroute default path to this file (optional)' />
         <button>Add Serving File</button>
     </div>

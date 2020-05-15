@@ -39,6 +39,18 @@
     text-align: center;
 }
 
+.application-status span{
+    font-size:1.2em;
+    font-family: sans-serif;
+}
+
+.application-status .STOPPED{
+    color:red;
+}
+
+.application-status .RUNNING{
+    color:green;
+}
 .card footer{
     width:100%;
     display:flex;
