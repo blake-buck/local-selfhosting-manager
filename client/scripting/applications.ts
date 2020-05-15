@@ -42,17 +42,16 @@ function createCard(application:Application){
     card.innerHTML +=
     `
     <footer>
-        <button id='startApplication'>Start Application</button>
-        <button id='stopApplication'>Stop Application</button>
+        ${application.status === 'STOPPED' ? `<button id='startApplication'>Start Application</button>` : ''}
+        ${application.status === 'RUNNING' ? `<button id='stopApplication'>Stop Application</button>` : ''}
         <button id='configureApplication'>Configure Application</button>
-        <button>Create Shortcut</button>
         <button id='deleteApplication'>Delete Application</button>
     </footer>
     `
 
     // add event listeners to card buttons
-    card.querySelector('#startApplication').addEventListener('click', () => startApplication(application))
-    card.querySelector('#stopApplication').addEventListener('click', () => stopApplication(application))
+    card.querySelector('#startApplication')?.addEventListener('click', () => startApplication(application))
+    card.querySelector('#stopApplication')?.addEventListener('click', () => stopApplication(application))
     card.querySelector('#configureApplication').addEventListener('click', () => {
         openConfigDialog(application);
     });
