@@ -117,6 +117,12 @@ function closeConfigDialog(){
 }
 
 async function applicationSetup(application:string, commands:string, childDirectory:string){
+    const initialSnackbar = 
+        openSnackbar(
+            `Running ${commands} in ${ childDirectory ? `${application}/${childDirectory}`: application}`,
+            'gray'
+        );
+
     const request = await fetch(
         '/api/application/setup',
         {
@@ -133,7 +139,16 @@ async function applicationSetup(application:string, commands:string, childDirect
 
     const response = await request.json();
 
+    closeSnackbar(initialSnackbar);
+
     console.log(response);
+
+    if(response.status === 200){
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
 }
 
 async function addServingFile(applicationId:string, serveFrom:string, rerouteDefaultPathTo:string, port:string){
@@ -156,6 +171,13 @@ async function addServingFile(applicationId:string, serveFrom:string, rerouteDef
     const response = await request.json();
 
     console.log(response);
+
+    if(response.status === 200){
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
 }
 
 async function modifyStartScript(startScript:string){
@@ -173,6 +195,15 @@ async function modifyStartScript(startScript:string){
             }
         }
     );
+
+    const response = await request.json();
+
+    if(response.status === 200){
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
 }
 
 async function createApplicationShortcut(application, portNumber:string){
@@ -194,4 +225,11 @@ async function createApplicationShortcut(application, portNumber:string){
     const response = await request.json();
 
     console.log(response);
+
+    if(response.status === 200){
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
 }

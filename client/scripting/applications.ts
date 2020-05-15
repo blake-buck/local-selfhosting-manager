@@ -86,7 +86,14 @@ async function refreshApplications(){
 
     const applications = (await response.json()).table;
     
-    renderApplicationCards(applications);
+    if(response.status === 200){
+        renderApplicationCards(applications);
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
+
 }
 
 async function deleteApplication(id:string){
@@ -99,7 +106,13 @@ async function deleteApplication(id:string){
     console.log(response);
     const applications = response.table;
 
-    renderApplicationCards(applications);
+    if(response.status === 200){
+        renderApplicationCards(applications);
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
 }
 
 async function startApplication(application:Application, scriptArgs?:string){
@@ -173,6 +186,12 @@ async function autoStartApplications(){
     const response = await request.json();
 
     console.log(response);
+    if(response.status === 200){
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
 }
 
 async function stopAutoStartApplications(){
@@ -186,4 +205,11 @@ async function stopAutoStartApplications(){
     const response = await request.json();
 
     console.log(response);
+
+    if(response.status === 200){
+        openSnackbar(response.message, 'green', 5000);
+    }
+    else{
+        openSnackbar(response.message, 'red', 5000);
+    }
 }

@@ -12,7 +12,7 @@ function renderSnackbars(snackbars:Snackbar[]){
     );
 }
 
-function openSnackbar(message:string, color:snackbarColor, timeout:number){
+function openSnackbar(message:string, color:snackbarColor, timeout?:number){
     const id = Math.random();
 
     snackbarList.push({id, message, color, timeout});
