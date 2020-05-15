@@ -24,7 +24,7 @@ function createCard(application:Application){
     card.innerHTML += 
     `
     <header>
-        <span>${application.title}</span>
+        <span>${application.id}</span>
     </header>
 
     <footer>
@@ -94,7 +94,7 @@ async function startApplication(application:Application, scriptArgs?:string){
             method:'POST',
             body:JSON.stringify({
                 applicationPath:application.id,
-                applicationName:application.title,
+                applicationName:application.id,
                 startScript:application.startScript,
                 scriptArgs:scriptArgs ? scriptArgs : ''
             }),

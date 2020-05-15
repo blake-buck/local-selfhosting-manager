@@ -1,12 +1,15 @@
 import * as filesystem from 'fs';
 
-import { applicationsPath } from './paths';
+import { applicationsPath, distHtml } from './paths';
 const fs = filesystem.promises;
 
 import * as path from 'path';
 
 export async function findFavicon(application, directoriesToExclude?){
-   return searchDirectory(path.join(applicationsPath, application), directoriesToExclude)
+   const favicon = await searchDirectory(path.join(applicationsPath, application), directoriesToExclude)
+   
+    // if facvicon exists return it otherwise use default favicon
+   return favicon ? favicon : 'favicon.ico';
 }
 
 async function searchDirectory(directory, directoriesToExclude?){

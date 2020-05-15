@@ -12,7 +12,7 @@ import { deleteEverythingInDirectory } from './utils/deleteDirectory';
 import { createServingFile } from './utils/createServingFile';
 import { OPERATING_SYSTEM } from '../environment';
 import { getWindowsUser } from './utils/getWindowsUser';
-import { applicationsPath } from './utils/paths';
+import { applicationsPath, rootDirectory } from './utils/paths';
 import { findFavicon } from './utils/findFavicon';
 import { autoRestartApplications } from './utils/autoRestartApplications';
 
@@ -355,8 +355,10 @@ export async function createShortcut(req, res){
 
             // if the application has a favicon, add it to the shortcut
             const favicon = (await queryItemById(APPLICATIONS_TABLE, applicationId)).favicon;
+            let iconFile = path.join(rootDirectory, favicon);
+
             if(favicon){
-                shortcutFileContents += `\nIconIndex=0\nIconFile=${favicon}`
+                shortcutFileContents += `\nIconIndex=0\nIconFile=${iconFile}`
             }
 
             await fs.writeFile(
