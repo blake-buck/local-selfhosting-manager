@@ -20,198 +20,269 @@ import { autoRestartApplications } from './utils/autoRestartApplications';
 const APPLICATIONS_TABLE = 'applications';
 
 export async function getAllApplications(req, res){
-    const table = await returnTable(APPLICATIONS_TABLE);
-    if(table){
-        res.status(200).send({status:200, message:'QUERY EXECUTED SUCCESSFULLY', table});
+
+    try{
+
+        const table = await returnTable(APPLICATIONS_TABLE);
+
+        if(table){
+            res.status(200).send({status:200, message:'QUERY EXECUTED SUCCESSFULLY', table});
+        }
+        else{
+            res.status(404).send({status:404, message:'APPLICATIONS TABLE NOT FOUND'})
+        }
+
     }
-    else{
-        res.status(404).send({status:404, message:'APPLICATIONS TABLE NOT FOUND'})
+    catch(e){
+        res.status(500).send({status:500, message:e});
     }
+    
 }
 
 export async function getApplicationById(req, res){
-    const application = await queryItemById(APPLICATIONS_TABLE, req.params.id);
 
-    if(application){
-        res.status(200).send({status:200, message:'QUERY EXECUTED SUCCESSFULLY', application});
+    try{
+
+        const application = await queryItemById(APPLICATIONS_TABLE, req.params.id);
+
+        if(application){
+            res.status(200).send({status:200, message:'QUERY EXECUTED SUCCESSFULLY', application});
+        }
+        else{
+            res.status(404).send({status:404, message:'APPLICATION NOT FOUND'});
+        }
+
     }
-    else{
-        res.status(404).send({status:404, message:'APPLICATION NOT FOUND'});
+    catch(e){
+        res.status(500).send({status:500, message:e});
     }
+    
 }
 
 export async function addApplication(req, res){
-    await addToDatabase(APPLICATIONS_TABLE, req.body.title, req.body);
-    res.status(200).send({status:200, message:'ALL GOOD'});
+
+    try{
+        await addToDatabase(APPLICATIONS_TABLE, req.body.title, req.body);
+        res.status(200).send({status:200, message:'ALL GOOD'});
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
+    }
+    
 }
 
 export async function cloneRepo(req, res){
-    const { repoUrl } = req.body;
 
-    exec(
-        `git clone ${repoUrl}`, 
-        {
-            cwd:path.join(__dirname, '../../applications')
-        }, 
-        async (err, stdout, stderr) => {
-            if(err){
-                console.log("ERR", err);
-                res.status(400).send({status:400, message:err});
+    try{
+        const { repoUrl } = req.body;
+
+        exec(
+            `git clone ${repoUrl}`, 
+            {
+                cwd:path.join(__dirname, '../../applications')
+            }, 
+            async (err, stdout, stderr) => {
+                if(err){
+                    console.log("ERR", err);
+                    res.status(400).send({status:400, message:err});
+                }
+                // Don't like how this feels, should get to the bottom of why Cloning into... is output through stderr
+                if(stderr.includes('Cloning into')){
+                   await refresh(req, res)
+                }
+                if(!stderr.includes('Cloning into')){
+                    console.log("STDERR ", stderr);
+                    
+                    res.status(400).send({status:400, message:stderr});
+                }
             }
-            // Don't like how this feels, should get to the bottom of why Cloning into... is output through stderr
-            if(stderr.includes('Cloning into')){
-               await refresh(req, res)
-            }
-            if(!stderr.includes('Cloning into')){
-                console.log("STDERR ", stderr);
-                
-                res.status(400).send({status:400, message:stderr});
-            }
-        }
-    );
+        );
+
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
+    }
+    
 }
 
 export async function refresh(req, res){
-    const applicationsFolderContents = await fs.readdir(applicationsPath);
-    const applicationsInDatabase     = await returnTable(APPLICATIONS_TABLE);
 
-    // if the app is in the applications folder and not in the database, add to database
-    const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.title === appTitle));
+    try{
+        const applicationsFolderContents = await fs.readdir(applicationsPath);
+        const applicationsInDatabase     = await returnTable(APPLICATIONS_TABLE);
     
-    for(let i=0; i < untrackedApplicationTitles.length; i++){
-        const untrackedAppTitle = untrackedApplicationTitles[i];
-        await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle)})
+        // if the app is in the applications folder and not in the database, add to database
+        const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.title === appTitle));
+        
+        for(let i=0; i < untrackedApplicationTitles.length; i++){
+            const untrackedAppTitle = untrackedApplicationTitles[i];
+            await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle)})
+        }
+        
+        res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`, table: await returnTable(APPLICATIONS_TABLE)});
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
     }
     
-    res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`, table: await returnTable(APPLICATIONS_TABLE)});
 }
 
 export async function applicationSetup(req, res){
-    const { commands, application } = req.body;
+    try{
+        const { commands, application } = req.body;
 
-    // run the user given commands e.g. "npm install" in the selected application
-    exec(
-        commands, 
-        {
-            cwd:`${applicationsPath}/${application}`
-        }, 
-        async (err, stdout, stderr) => {
-
-            if(err){
-                console.log("ERR", err);
-                res.status(400).send({status:400, message:err});
+        // run the user given commands e.g. "npm install" in the selected application
+        exec(
+            commands, 
+            {
+                cwd:`${applicationsPath}/${application}`
+            }, 
+            async (err, stdout, stderr) => {
+    
+                if(err){
+                    console.log("ERR", err);
+                    res.status(400).send({status:400, message:err});
+                }
+    
+                else if(stdout){
+                    console.log("STDOUT", stdout)
+                    res.status(200).send({status:200, message:stdout});
+                }
+    
+                else if(stderr){
+                    console.log("STDERR ", stderr);
+                    
+                    res.status(400).send({status:400, message:stderr});
+                }
+    
             }
-
-            else if(stdout){
-                console.log("STDOUT", stdout)
-                res.status(200).send({status:200, message:stdout});
-            }
-
-            else if(stderr){
-                console.log("STDERR ", stderr);
-                
-                res.status(400).send({status:400, message:stderr});
-            }
-
-        }
-    );
+        );
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
+    }
+    
 }
 
 export async function deleteApplication(req, res){
-    const { id } = req.params;
-    const application = await queryItemById(APPLICATIONS_TABLE, id);
-
-    console.log('DELETING...');
-    // delete application from database
-    await deleteItemById(APPLICATIONS_TABLE, id);
-    
-
-    
-
-
-    // stop the daemon running the application
-    pm2.stop(application.id, (err) => {
-        if(err){
-            console.log(err)
-        }
-    });
-
-    // delete application directory from applications folder
-    await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
-
-    // clean up any directories that dont get deleted -- not sure how i feel about this; deleteEverythingInDirectory should delete everything in one pass
     try{
-        if(await fs.readdir(`${applicationsPath}/${application.title}`)){
-            await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+        const { id } = req.params;
+        const application = await queryItemById(APPLICATIONS_TABLE, id);
+    
+        console.log('DELETING...');
+        // delete application from database
+        await deleteItemById(APPLICATIONS_TABLE, id);
+        
+    
+        
+    
+    
+        // stop the daemon running the application
+        pm2.stop(application.id, (err) => {
+            if(err){
+                console.log(err)
+            }
+        });
+    
+        // delete application directory from applications folder
+        await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+    
+        // clean up any directories that dont get deleted -- not sure how i feel about this; deleteEverythingInDirectory should delete everything in one pass
+        try{
+            if(await fs.readdir(`${applicationsPath}/${application.title}`)){
+                await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+            }
+            await fs.rmdir(`${applicationsPath}/${application.title}`);
         }
-        await fs.rmdir(`${applicationsPath}/${application.title}`);
+        catch(e){
+            console.log('ERROR ', e);
+        }
+        
+        res.status(200).send({status:200, message:`${application.title} has been deleted`, table: await returnTable(APPLICATIONS_TABLE)});
     }
     catch(e){
-        console.log('ERROR ', e);
+        res.status(500).send({status:500, message:e});
     }
     
-    res.status(200).send({status:200, message:`${application.title} has been deleted`, table: await returnTable(APPLICATIONS_TABLE)})
 }
 
 export async function startApplication(req, res){
-    // daemonize given application
-    const { applicationPath, applicationName, startScript, scriptArgs } = req.body;
-    
-    pm2.start(
-        {
-            name:   applicationName,
-            script: startScript,
-            args:   scriptArgs,
-            cwd:    path.join(__dirname, `../../applications/${applicationPath}`)
-        },
-        async (err, proc) => {
-            if(err){
-                console.log(err);
-                res.status(500).send({status:500, message:`Error starting ${applicationName}`});
-            }
-            else if(proc){
+    try{
+        // daemonize given application
+        const { applicationPath, applicationName, startScript, scriptArgs } = req.body;
+        
+        pm2.start(
+            {
+                name:   applicationName,
+                script: startScript,
+                args:   scriptArgs,
+                cwd:    path.join(__dirname, `../../applications/${applicationPath}`)
+            },
+            async (err, proc) => {
+                if(err){
+                    console.log(err);
+                    res.status(500).send({status:500, message:`Error starting ${applicationName}`});
+                }
+                else if(proc){
 
-                try{
-                    await autoRestartApplications();
-                    res.status(200).send({status:200, message:`${applicationName} is started!`});
+                    try{
+                        await autoRestartApplications();
+                        res.status(200).send({status:200, message:`${applicationName} is started!`});
+                    }
+                    catch(e){
+                        res.status(500).send({status:500, message:e})
+                    }
+                    
                 }
-                catch(e){
-                    res.status(500).send({status:500, message:e})
-                }
-                
             }
-        }
-    );
+        );
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
+    }
+    
 }
 
 export async function stopApplication(req, res){
-    // stop application daemon
-    const { applicationName } = req.body;
+    try{
+        // stop application daemon
+        const { applicationName } = req.body;
 
-    pm2.stop(applicationName, async (err, proc) => {
-        if(err){
-            console.log(err);
-            res.status(500).send({status:500, message:`Error stopping ${applicationName}`});
-        }
-        else if(proc){
-            try{
-                await autoRestartApplications();
-                res.status(200).send({status:200, message:`${applicationName} is stopped!`});
+        pm2.stop(applicationName, async (err, proc) => {
+            if(err){
+                console.log(err);
+                res.status(500).send({status:500, message:`Error stopping ${applicationName}`});
             }
-            catch(e){
-                res.status(500).send({status:500, message:e});
+            else if(proc){
+                try{
+                    await autoRestartApplications();
+                    res.status(200).send({status:200, message:`${applicationName} is stopped!`});
+                }
+                catch(e){
+                    res.status(500).send({status:500, message:e});
+                }
             }
-        }
-    })
+        });
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
+    }
+    
 }
 
 export async function addServingFile(req, res){
-    // adds http server file to given application
-    const {applicationId, serveFrom, rerouteDefaultPathTo, port} = req.body;
+    try{
+        // adds http server file to given application
+        const {applicationId, serveFrom, rerouteDefaultPathTo, port} = req.body;
 
-    await createServingFile(path.join(applicationsPath, applicationId), serveFrom, rerouteDefaultPathTo, port);
+        await createServingFile(path.join(applicationsPath, applicationId), serveFrom, rerouteDefaultPathTo, port);
 
-    res.status(200).send({status:200, message:'Serve file has been created.'})
+        res.status(200).send({status:200, message:'Serve file has been created.'});
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
+    }
+    
 }
 
 export async function addToStartup(req, res){
@@ -309,10 +380,16 @@ export async function createShortcut(req, res){
 }
 
 export async function updateApplication(req, res){
-    const { id } = req.params;
-    const { updatedValues } = req.body;
-
-    await updateItemById(APPLICATIONS_TABLE, id, updatedValues);
-
-    res.status(200).send({status:200, message:`${id} has been updated.`})
+    try{
+        const { id } = req.params;
+        const { updatedValues } = req.body;
+    
+        await updateItemById(APPLICATIONS_TABLE, id, updatedValues);
+    
+        res.status(200).send({status:200, message:`${id} has been updated.`});
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
+    }
+    
 }
