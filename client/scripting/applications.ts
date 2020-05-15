@@ -77,12 +77,14 @@ async function refreshApplications(){
 }
 
 async function deleteApplication(id:string){
-    let response: any = await fetch(
+    let request: any = await fetch(
         `/api/application/${id}`, 
         { method:'DELETE' }
     );
 
-    const applications = (await response.json()).table;
+    let response = await request.json();
+    console.log(response);
+    const applications = response.table;
 
     renderApplicationCards(applications);
 }

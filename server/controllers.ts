@@ -62,7 +62,7 @@ export async function getApplicationById(req, res){
 export async function addApplication(req, res){
 
     try{
-        await addToDatabase(APPLICATIONS_TABLE, req.body.title, req.body);
+        await addToDatabase(APPLICATIONS_TABLE, req.body.id, req.body);
         res.status(200).send({status:200, message:'ALL GOOD'});
     }
     catch(e){
@@ -112,7 +112,7 @@ export async function refresh(req, res){
         const applicationsInDatabase     = await returnTable(APPLICATIONS_TABLE);
     
         // if the app is in the applications folder and not in the database, add to database
-        const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.title === appTitle));
+        const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.id === appTitle));
         
         for(let i=0; i < untrackedApplicationTitles.length; i++){
             const untrackedAppTitle = untrackedApplicationTitles[i];
@@ -178,27 +178,39 @@ export async function deleteApplication(req, res){
     
     
         // stop the daemon running the application
-        pm2.stop(application.id, (err) => {
+        pm2.describe(application.id, (err, description) => {
             if(err){
-                console.log(err)
+                console.log('big time err')
+                console.log(err);
             }
-        });
+            if(description && description.length > 0){
+                pm2.stop(application.id, (err) => {
+                    console.log('small time err')
+                    if(err){
+                        console.log(err)
+                    }
+                });
+            }
+        })
+        
     
-        // delete application directory from applications folder
-        await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
-    
-        // clean up any directories that dont get deleted -- not sure how i feel about this; deleteEverythingInDirectory should delete everything in one pass
+        
         try{
-            if(await fs.readdir(`${applicationsPath}/${application.title}`)){
-                await deleteEverythingInDirectory(`${applicationsPath}/${application.title}`);
+            // delete application directory from applications folder
+            await deleteEverythingInDirectory(`${applicationsPath}/${application.id}`);
+        
+            // clean up any directories that dont get deleted -- not sure how i feel about this; deleteEverythingInDirectory should delete everything in one pass
+            
+            if(await fs.readdir(`${applicationsPath}/${application.id}`)){
+                await deleteEverythingInDirectory(`${applicationsPath}/${application.id}`);
             }
-            await fs.rmdir(`${applicationsPath}/${application.title}`);
+            await fs.rmdir(`${applicationsPath}/${application.id}`);
         }
         catch(e){
             console.log('ERROR ', e);
         }
         
-        res.status(200).send({status:200, message:`${application.title} has been deleted`, table: await returnTable(APPLICATIONS_TABLE)});
+        res.status(200).send({status:200, message:`${application.id} has been deleted`, table: await returnTable(APPLICATIONS_TABLE)});
     }
     catch(e){
         res.status(500).send({status:500, message:e});
