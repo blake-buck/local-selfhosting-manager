@@ -30,7 +30,7 @@ async function cloneRepository(repoUrl:string){
 
         const body = {repoUrl};
 
-        let response: any = await fetch(
+        let request: any = await fetch(
             '/api/application/clone', 
             {
                 method:'POST',
@@ -41,19 +41,24 @@ async function cloneRepository(repoUrl:string){
             }
         );
     
-        response = (await response.json());
+        let response = await request.json();
     
         // once a response is received, move from step 2 to step 3
-        renderStepThree();
+        if(response.status === 200){
+            renderStepThree(false);
+        
+            // get an updated list of applications and rerender cards
+            let applications: any = await fetch('/api/applications');
+            applications = (await applications.json()).table;
+        
+            renderApplicationCards(applications);
+        }
+        else{
+            renderStepThree(true);
+        }
 
         document.querySelector('.step-3 #closeCloningDialog').addEventListener('click', closeCloningDialog);
-
-    
-        // get an updated list of applications and rerender cards
-        let applications: any = await fetch('/api/applications');
-        applications = (await applications.json()).table;
-    
-        renderApplicationCards(applications);
+        
     }
 
 }
@@ -104,8 +109,8 @@ function renderStepTwo(){
     `);
 }
 
-function renderStepThree(){
-    reRenderCloningDialog(`
+function renderStepThree(failure:boolean){
+    let template = `
     <div class='step-3'>
         <h3>Success</h3>
         <p>&#10004;</p>
@@ -113,5 +118,18 @@ function renderStepThree(){
             <button id='closeCloningDialog'>Close</button>
         </span>
     </div>
-    `);
+    `;
+
+    if(failure){
+        template = `
+        <div class='step-3'>
+            <h3>Failure</h3>
+            <p>&#10006;</p>
+            <span>
+                <button id='closeCloningDialog'>Close</button>
+            </span>
+        </div>
+        `
+    }
+    reRenderCloningDialog(template);
 }

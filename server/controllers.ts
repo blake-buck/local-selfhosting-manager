@@ -87,10 +87,10 @@ export async function cloneRepo(req, res){
                     res.status(400).send({status:400, message:err});
                 }
                 // Don't like how this feels, should get to the bottom of why Cloning into... is output through stderr
-                if(stderr.includes('Cloning into')){
+                else if(stderr.includes('Cloning into')){
                    await refresh(req, res)
                 }
-                if(!stderr.includes('Cloning into')){
+                else if(!stderr.includes('Cloning into')){
                     console.log("STDERR ", stderr);
                     
                     res.status(400).send({status:400, message:stderr});
