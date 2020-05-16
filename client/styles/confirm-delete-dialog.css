@@ -1,0 +1,20 @@
+.confirm-delete-dialog-backdrop .dialog-body{
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.confirm-delete-dialog-backdrop h1{
+    font-size:2em;
+}
+
+.confirm-delete-dialog-backdrop p{
+    font-size:1.3em;
+}
+
+.confirm-delete-dialog-backdrop span{
+    width:100%;
+    
+    display:flex;
+    justify-content: flex-end;
+}

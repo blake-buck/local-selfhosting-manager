@@ -5,6 +5,7 @@
 @import 'snackbars.css';
 @import 'header.css';
 @import 'sidebar.css';
+@import 'confirm-delete-dialog.css';
 
 body{
     color: #444444;

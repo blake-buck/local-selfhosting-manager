@@ -55,9 +55,7 @@ function createCard(application:Application){
     card.querySelector('#configureApplication').addEventListener('click', () => {
         openConfigDialog(application);
     });
-    card.querySelector('#deleteApplication').addEventListener('click', () => {
-        deleteApplication(application.id)
-    });
+    card.querySelector('#deleteApplication').addEventListener('click', () => openConfirmationDialog(application));
 
     return card;
 }

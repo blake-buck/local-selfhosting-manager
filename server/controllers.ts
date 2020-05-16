@@ -177,19 +177,20 @@ export async function deleteApplication(req, res){
         
     
     
-        // stop the daemon running the application
+        // delete the daemon running the application
         pm2.describe(application.id, (err, description) => {
             if(err){
                 console.log('big time err')
                 console.log(err);
             }
             if(description && description.length > 0){
-                pm2.stop(application.id, (err) => {
-                    console.log('small time err')
+                pm2.delete(application.id, (err) => {
                     if(err){
+                        console.log('small time err')
                         console.log(err)
                     }
                 });
+
             }
         })
         
