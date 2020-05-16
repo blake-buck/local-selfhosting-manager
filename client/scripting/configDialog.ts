@@ -12,8 +12,12 @@ function openConfigDialog(application){
     // create an application setup section
     const applicationSetupTemplate = `
         <div class='config-application-setup'>
+            <label>Child Directory</label>
             <input id='applicationChildDirectoryInput' placeholder='Child Directory' />
+
+            <label>Commands to Run</label>
             <input id='commandsInput' placeholder='Commands to Run' />
+            
             <button>Run Commands</button>
         </div>
     `
@@ -22,6 +26,7 @@ function openConfigDialog(application){
     // modify application start script
     const configSartScriptTemplate = `
     <div class='config-application-start-script'>
+        <label>Application Start Script</label>
         <input id='applicationStartScriptInput' value='${application.startScript ? application.startScript : ''}' placeholder='Application Start Script' />
         <button>modify</button>
     </div>
@@ -32,8 +37,13 @@ function openConfigDialog(application){
 
     const addServingFileTemplate = `
     <div class='config-serving-file'>
+        <label>Directory to Serve</label>
         <input id='directoryToServe' placeholder='Directory to serve e.g. build, dist. Leave blank if root directory' />
+
+        <label>Port to host on</label>
         <input id='portInput' placeholder='Port to host on' />
+
+        <label>Reroute default path to</label>
         <input id='rerouteDefaultPathTo' placeholder='Reroute default path to this file (optional)' />
         <button>Add Serving File</button>
     </div>
@@ -43,6 +53,7 @@ function openConfigDialog(application){
     // create shortcut button
     const createShortcutTemplate = `
     <div class='create-shortcut-div'>
+        <label>Application Port</label>
         <input id='createShortcutInput' value='${application.shortcutPort ? application.shortcutPort : ''}' placeholder='Application Port Number' />
         <button>Create Shortcut</button>
     </div>
