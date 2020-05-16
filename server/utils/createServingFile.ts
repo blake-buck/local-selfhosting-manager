@@ -12,30 +12,28 @@ export async function createServingFile(applicationPath, serveFrom, rerouteDefau
     await fs.writeFile(
         path.join(applicationPath, 'local-selfhosting-serve-file.js'),
         `
-        const http = require('http');
-        const fs   = require('fs').promises;
+        const express = require('express');
         const path = require('path');
-        const server = http.createServer(async (req, res) => {
-            const serveFrom = '${serveFrom}';
+        const app = express();
+
+        const serveFrom = '${serveFrom}';
             const rerouteDefaultPathTo = '${rerouteDefaultPathTo}';
-            try{
+
+            app.get('*', express.static(path.join(__dirname, serveFrom)), (req, res) => {
                 if(rerouteDefaultPathTo && req.url === '/'){
-                    res.end(await fs.readFile(path.join(__dirname, serveFrom, rerouteDefaultPathTo), 'utf-8'));
+                    res.sendFile(path.join(__dirname, serveFrom, rerouteDefaultPathTo));
                 }
-                else if(!req.url.includes('local-selfhosting-serve-file.js')){
-                    res.end(
-                        await fs.readFile(path.join(__dirname, serveFrom, req.url), 'utf-8')
-                    );
+                else{
+                    res.sendFile(path.join(__dirname, serveFrom));
                 }
                 
-            }
-            catch(e){
-                console.log(e);
-            }
-            
-        });
+            })
     
-        server.listen(${port});
+
+        app.listen(${port});
+
+
+        
         `
     );
 
