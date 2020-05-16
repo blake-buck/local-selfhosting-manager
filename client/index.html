@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset='utf8'>
+        <script src='sidebar.js'></script>
         <script src='snackbars.js'></script>
         <script src='applications.js'></script>
         <script src='cloningDialog.js'></script>
@@ -13,14 +14,23 @@
     <body>
 
         <header class='application-header'>
-            <h1>Applications</h1>
+            <span>
+                <button id='menuButton'>&#8801;</button>
+                <h1>Applications</h1>
+            </span>
+        </header>
+
+        <div class='sidebar closed'>
+            <header>
+                <button id='menuButton'>&#8801;</button>
+            </header>
             <span>
                 <button id='removeFromStart'>removeFromStart</button>
                 <button id='addToStart'>addToStart</button>
                 <button id='refreshApplications'>Refresh</button>
                 <button id='openCloningDialog'>Clone</button>
             </span>
-        </header>
+        </div>
         
         <div class='application-cards'>
 

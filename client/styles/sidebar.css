@@ -1,0 +1,31 @@
+.sidebar{
+    position:fixed;
+    top:0px;
+    left:0px;
+    transition:0.25s;
+
+    height:100vh;
+    width:300px;
+    background:lightgray;
+
+    display:flex;
+    flex-direction: column;
+}
+.sidebar.closed{
+    left:-305px;
+    transition:0.25s;
+}
+.sidebar header{
+    width:100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.sidebar header button{
+    font-size: 2em;
+    background:lightgray;
+}
+
+.sidebar span{
+    display:flex;
+    flex-direction: column;
+}

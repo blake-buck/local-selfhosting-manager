@@ -13,4 +13,6 @@ window.addEventListener('load', async (e) => {
 
     document.querySelector('#removeFromStart').addEventListener('click', () => stopAutoStartApplications());
     document.querySelector('#addToStart').addEventListener('click', () => autoStartApplications());
+
+    document.querySelectorAll('#menuButton').forEach(node => node.addEventListener('click', toggleSidebar));
 });

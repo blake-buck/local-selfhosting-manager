@@ -3,42 +3,11 @@
 @import 'config-dialog.css';
 @import 'applications.css';
 @import 'snackbars.css';
+@import 'header.css';
+@import 'sidebar.css';
 
 body{
     color: #444444;
-}
-
-
-.application-header{
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-
-    background:#3f51b5;
-    color:white;
-
-    width:100vw;
-    max-width: 100vw;
-}
-
-.application-header button{
-    background:#3f51b5;
-    border:none;
-    outline:none;
-
-    color:white;
-    font-size: 1.3em;
-
-    padding:10px;
-    margin:10px;
-    margin-right:20px;
-}
-
-.application-header h1{
-    font-size:2em;
-    padding:10px;
-    margin:10px;
-    text-transform: uppercase;
 }
 
 input{
