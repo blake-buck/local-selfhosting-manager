@@ -118,6 +118,10 @@ async function deleteApplication(id:string){
 }
 
 async function startApplication(application:Application, scriptArgs?:string){
+    if(application.status === 'UNCONFIGURED'){
+        return openSnackbar('You need to define an application start script first!', 'red');
+    }
+
     const request = await fetch(
         '/api/application/start',
         {
