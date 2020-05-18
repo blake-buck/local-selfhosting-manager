@@ -78,9 +78,11 @@ function initializeCloningDialog(){
 }
 
 function reRenderCloningDialog(contents){
-    const dialog = document.querySelector('.clone-app-dialog-backdrop')
-
-    dialog.innerHTML = dialogWrapper(contents);
+    const dialog = document.querySelector('.clone-app-dialog-backdrop');
+    
+    if(dialog){
+        dialog.innerHTML = dialogWrapper(contents);
+    }
 }
 
 function renderStepOne(){
