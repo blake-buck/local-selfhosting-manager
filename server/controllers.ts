@@ -116,7 +116,7 @@ export async function refresh(req, res){
         
         for(let i=0; i < untrackedApplicationTitles.length; i++){
             const untrackedAppTitle = untrackedApplicationTitles[i];
-            await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle), status:'STOPPED'})
+            await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle), status:'UNCONFIGURED'})
         }
         
         res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} new apps to application database.`, table: await returnTable(APPLICATIONS_TABLE)});
@@ -402,8 +402,8 @@ export async function updateApplication(req, res){
         const { updatedValues } = req.body;
     
         await updateItemById(APPLICATIONS_TABLE, id, updatedValues);
-    
-        res.status(200).send({status:200, message:`${id} has been updated.`});
+        const table = await returnTable(APPLICATIONS_TABLE);
+        res.status(200).send({status:200, message:`${id} has been updated.`, table});
     }
     catch(e){
         res.status(500).send({status:500, message:e});

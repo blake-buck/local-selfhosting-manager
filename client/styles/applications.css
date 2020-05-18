@@ -51,6 +51,11 @@
 .application-status .RUNNING{
     color:green;
 }
+
+.application-status .UNCONFIGURED{
+    color:goldenrod;
+}
+
 .card footer{
     width:100%;
     display:flex;

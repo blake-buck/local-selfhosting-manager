@@ -222,14 +222,21 @@ async function addServingFile(applicationId:string, serveFrom:string, rerouteDef
 }
 
 async function modifyStartScript(startScript:string){
+
+    let updatedValues:{startScript:string, status?: string} = {
+        startScript
+    };
+
+    if(configDialogState.application.status === 'UNCONFIGURED'){
+        updatedValues.status = 'STOPPED';
+    }
+
     const request = await fetch(
         `/api/application/${configDialogState.application.id}`,
         {
             method:'PUT',
             body:JSON.stringify({
-                updatedValues:{
-                    startScript
-                }
+                updatedValues
             }),
             headers:{
                 'Content-Type':'application/json'
@@ -240,6 +247,7 @@ async function modifyStartScript(startScript:string){
     const response = await request.json();
 
     if(response.status === 200){
+        renderApplicationCards(response.table);
         openSnackbar(response.message, 'green', 5000);
     }
     else{

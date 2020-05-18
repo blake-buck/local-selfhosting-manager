@@ -43,6 +43,7 @@ function createCard(application:Application){
     `
     <footer>
         ${application.status === 'STOPPED' ? `<button id='startApplication'>Start Application</button>` : ''}
+        ${application.status === 'UNCONFIGURED' ? `<button id='startApplication'>Start Application</button>` : ''}
         ${application.status === 'RUNNING' ? `<button id='stopApplication'>Stop Application</button>` : ''}
         <button id='configureApplication'>Configure Application</button>
         <button id='deleteApplication'>Delete Application</button>
