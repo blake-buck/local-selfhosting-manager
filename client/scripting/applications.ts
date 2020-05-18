@@ -77,15 +77,18 @@ function renderApplicationCards(applications:Application[]){
 
 async function refreshApplications(){
     // check the applications folder for user added apps
-    let response: any = await fetch(
+    const request: any = await fetch(
         '/api/applications/refresh', 
         { method:'POST' }
     );
+    
+    const response = await request.json();
 
-    const applications = (await response.json()).table;
+    const applications = response.table;
     
     if(response.status === 200){
         renderApplicationCards(applications);
+        
         openSnackbar(response.message, 'green', 5000);
     }
     else{

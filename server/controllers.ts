@@ -119,7 +119,7 @@ export async function refresh(req, res){
             await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle), status:'STOPPED'})
         }
         
-        res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} to application database`, table: await returnTable(APPLICATIONS_TABLE)});
+        res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} new apps to application database.`, table: await returnTable(APPLICATIONS_TABLE)});
     }
     catch(e){
         res.status(500).send({status:500, message:e});
@@ -172,8 +172,6 @@ export async function deleteApplication(req, res){
         console.log('DELETING...');
         // delete application from database
         await deleteItemById(APPLICATIONS_TABLE, id);
-        
-    
         
     
     
