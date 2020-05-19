@@ -410,3 +410,33 @@ export async function updateApplication(req, res){
     }
     
 }
+
+export async function uploadFavicon(req, res){
+    const { faviconData, applicationId } = req.body;
+    const faviconPath =  path.join(applicationsPath, applicationId, 'favicon.ico');
+
+    try{
+        await fs.writeFile(
+            faviconPath,
+            faviconData,
+            {encoding:'binary'}
+        );
+    
+        await updateItemById(
+            APPLICATIONS_TABLE,
+            applicationId,
+            {favicon:faviconPath.replace(/.+local-selfhosting-manager/, '')}
+        )
+    
+        res.status(200).send({
+            status:200, 
+            message:`${applicationId} favicon is updated`,
+            table: await returnTable(APPLICATIONS_TABLE)
+        });
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e})
+    }
+
+    
+}

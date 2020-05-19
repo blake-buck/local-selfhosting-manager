@@ -1,4 +1,4 @@
-import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile, createShortcut, addToStartup, removeFromStartup, updateApplication} from './controllers';
+import {refresh, cloneRepo, addApplication, getApplicationById, getAllApplications, applicationSetup, deleteApplication, startApplication, stopApplication, addServingFile, createShortcut, addToStartup, removeFromStartup, updateApplication, uploadFavicon} from './controllers';
 
 export function useApplicationRoutes(app){
 
@@ -66,6 +66,11 @@ export function useApplicationRoutes(app){
     app.post(
         '/api/application/create-shortcut',
         createShortcut
+    );
+
+    app.post(
+        '/api/application/favicon',
+        uploadFavicon
     );
 
 

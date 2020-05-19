@@ -98,6 +98,22 @@ function openConfigDialog(application){
     </div>
     `
 
+    // create a favicon upload 
+    const uploadFaviconTemplate = `
+    <div class='upload-favcion-div'>
+        <h3>
+            Upload Favicon
+            <b>
+                ?
+                <span>Change/upload a favicon to this application</span>
+            </b>
+        </h3>
+        <label>Select File</label>
+        <input id='uploadFaviconInput' accept='image/x-icon' type='file' />
+        <button>Upload</button>
+    </div>
+    `
+
 
     // append everything to DOM
 
@@ -113,6 +129,7 @@ function openConfigDialog(application){
                 ${configSartScriptTemplate}
                 ${addServingFileTemplate}
                 ${createShortcutTemplate}
+                ${uploadFaviconTemplate}
                 </div>
             </div>
             `
@@ -145,6 +162,11 @@ function openConfigDialog(application){
         const portNumber = document.querySelector('#createShortcutInput')['value'];
         createApplicationShortcut(application, portNumber);
     });
+
+    document.querySelector('.config-dialog-body .upload-favcion-div button').addEventListener('click', () => {
+        const inputValue = document.querySelector('#uploadFaviconInput')['files'][0];
+        uploadFavicon(application, inputValue);
+    })
     
     document.querySelector('.config-dialog-body header button').addEventListener('click', closeConfigDialog);
 
@@ -280,5 +302,37 @@ async function createApplicationShortcut(application, portNumber:string){
     }
     else{
         openSnackbar(response.message, 'red', 5000);
+    }
+}
+
+async function uploadFavicon(application, inputValue:Blob){
+    const reader = new FileReader();
+    reader.readAsBinaryString(inputValue);
+
+    reader.onload = async (e) => {
+        const faviconData = e.target.result;
+        const applicationId = application.id;
+
+        const request = await fetch(
+            '/api/application/favicon',
+            {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({applicationId, faviconData})
+            }
+        );
+
+        const response = await request.json();
+
+        if(response.status === 200){
+            openSnackbar(response.message, 'green', 5000);
+            renderApplicationCards(response.table);
+        }
+        else{
+            openSnackbar(response.message, 'red', 5000);
+        }
+
     }
 }
