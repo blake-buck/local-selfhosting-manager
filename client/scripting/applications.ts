@@ -4,6 +4,7 @@ function createCard(application:Application){
     // Create card wrapper
     const card = document.createElement('div');
     card.classList.add('card');
+    card.classList.add('center-column-layout');
     card.id = application.id;
 
     // initialize innerHTML to be blank
@@ -41,7 +42,7 @@ function createCard(application:Application){
     // add action buttons to the card
     card.innerHTML +=
     `
-    <footer>
+    <footer class='center-column-layout'>
         ${application.status === 'STOPPED' ? `<button id='startApplication'>Start Application</button>` : ''}
         ${application.status === 'UNCONFIGURED' ? `<button id='startApplication'>Start Application</button>` : ''}
         ${application.status === 'RUNNING' ? `<button id='stopApplication'>Stop Application</button>` : ''}

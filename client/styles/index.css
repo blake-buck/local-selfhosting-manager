@@ -76,3 +76,9 @@ button:active{
 
     min-height:50%;
 }
+
+.center-column-layout{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}

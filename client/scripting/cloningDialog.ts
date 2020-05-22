@@ -87,7 +87,7 @@ function reRenderCloningDialog(contents){
 
 function renderStepOne(){
     reRenderCloningDialog(`
-    <div class='step-1'>
+    <div class='center-column-layout step-1'>
         <h3>Clone Git Repository</h3>
         <input id='repoUrl' placeholder='Repo URL' />
         <span>
@@ -101,7 +101,7 @@ function renderStepOne(){
 
 function renderStepTwo(){
     reRenderCloningDialog(`
-    <div class='step-2'>
+    <div class='center-column-layout step-2'>
         <h3>Cloning</h3>
         <div class='spinner'></div>
         <span>
@@ -113,7 +113,7 @@ function renderStepTwo(){
 
 function renderStepThree(failure:boolean){
     let template = `
-    <div class='step-3'>
+    <div class='center-column-layout step-3'>
         <h3>Success</h3>
         <p>&#10004;</p>
         <span>
@@ -124,7 +124,7 @@ function renderStepThree(failure:boolean){
 
     if(failure){
         template = `
-        <div class='step-3'>
+        <div class='center-column-layout step-3'>
             <h3>Failure</h3>
             <p>&#10006;</p>
             <span>

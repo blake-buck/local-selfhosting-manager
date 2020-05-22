@@ -123,7 +123,7 @@ function openConfigDialog(application){
             
             `
             <div class='config-dialog-backdrop'>
-                <div class='config-dialog-body dialog-body'>
+                <div class='center-column-layout config-dialog-body dialog-body'>
                 ${dialogHeader}
                 ${applicationSetupTemplate}
                 ${configSartScriptTemplate}

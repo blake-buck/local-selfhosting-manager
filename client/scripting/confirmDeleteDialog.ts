@@ -4,6 +4,7 @@ function openConfirmationDialog(application:Application){
     backdrop.classList.add('confirm-delete-dialog-backdrop');
 
     const body = document.createElement('div');
+    body.classList.add('center-column-layout');
     body.classList.add('dialog-body')
 
     backdrop.appendChild(body);
