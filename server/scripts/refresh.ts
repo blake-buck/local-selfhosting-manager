@@ -10,8 +10,10 @@ import { APPLICATIONS_TABLE, INDEPENDENT, UNCONFIGURED } from "../../environment
 // first two process.argv variables are file paths, the rest are arguments passed to the script
 // if the script is being run independently, it will have a 3rd argument equal to 'INDEPENDENT'
 if(process.argv[2] === INDEPENDENT){
-    console.log('RUNNING STANDALONE SCRIPT');
-    refreshScript();
+    refreshScript().then(res => {
+        console.log(res);
+        process.exit();
+    })
 }
 
 export async function refreshScript(){

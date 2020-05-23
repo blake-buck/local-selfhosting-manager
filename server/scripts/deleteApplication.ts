@@ -14,12 +14,15 @@ if(process.argv[2] === INDEPENDENT){
     const id = process.argv[3];
 
     if(id){
-        deleteApplicationScript(id).then(res => console.log(res));
+        deleteApplicationScript(id).then(res => {
+            console.log(res);
+            process.exit();
+        });
     }
     else{
         console.log('You must provide an application id in the command line.')
     }
-    
+
 }
 
 export async function deleteApplicationScript(id){

@@ -7,15 +7,16 @@ const fs = filesystem.promises;
 
 import * as pm2 from 'pm2';
 
-import { returnTable, queryItemById, addToDatabase, deleteItemById, updateItemById } from './database';
-import { deleteEverythingInDirectory } from './utils/deleteDirectory';
+import { returnTable, queryItemById, addToDatabase, updateItemById } from './database';
 import { createServingFile } from './utils/createServingFile';
-import { OPERATING_SYSTEM, WINDOWS, FAVICON, APPLICATIONS_TABLE } from '../environment';
+import { OPERATING_SYSTEM, WINDOWS, FAVICON, APPLICATIONS_TABLE, STOPPED } from '../environment';
 import { getWindowsUser } from './utils/getWindowsUser';
 import { applicationsPath, rootDirectory } from './utils/paths';
 import { autoRestartApplications } from './utils/autoRestartApplications';
 import { refreshScript } from './scripts/refresh';
 import { deleteApplicationScript } from './scripts/deleteApplication';
+import { startApplicationScript } from './scripts/startApplication';
+import { stopApplicationScript } from './scripts/stopApplication';
 
 export async function getAllApplications(req, res){
 
@@ -155,69 +156,20 @@ export async function deleteApplication(req, res){
 }
 
 export async function startApplication(req, res){
-    try{
-        // daemonize given application
-        const { applicationPath, applicationName, startScript, scriptArgs } = req.body;
-        
-        pm2.start(
-            {
-                name:   applicationName,
-                script: startScript,
-                args:   scriptArgs,
-                cwd:   `${applicationsPath}/${applicationPath}`
-            },
-            async (err, proc) => {
-                if(err){
-                    console.log(err);
-                    res.status(500).send({status:500, message:`Error starting ${applicationName}`});
-                }
-                else if(proc){
+    const { applicationPath, applicationName, startScript, scriptArgs } = req.body;
 
-                    try{
-                        await autoRestartApplications();
-                        await updateItemById(APPLICATIONS_TABLE, applicationName, {status:RUNNING});
-                        res.status(200).send({status:200, message:`${applicationName} is started!`, table: await returnTable(APPLICATIONS_TABLE)});
-                    }
-                    catch(e){
-                        res.status(500).send({status:500, message:e})
-                    }
-                    
-                }
-            }
-        );
-    }
-    catch(e){
-        res.status(500).send({status:500, message:e});
-    }
-    
+    const result:any = await startApplicationScript(applicationName, applicationPath, startScript, scriptArgs);
+
+    res.status(result.status).send(result);    
 }
 
 export async function stopApplication(req, res){
-    try{
-        // stop application daemon
-        const { applicationName } = req.body;
+    // stop application daemon
+    const { applicationName } = req.body;
 
-        pm2.stop(applicationName, async (err, proc) => {
-            if(err){
-                console.log(err);
-                res.status(500).send({status:500, message:`Error stopping ${applicationName}`});
-            }
-            else if(proc){
-                try{
-                    await autoRestartApplications();
-                    await updateItemById(APPLICATIONS_TABLE, applicationName, {status:STOPPED});
-                    res.status(200).send({status:200, message:`${applicationName} is stopped!`, table: await returnTable(APPLICATIONS_TABLE)});
-                }
-                catch(e){
-                    res.status(500).send({status:500, message:e});
-                }
-            }
-        });
-    }
-    catch(e){
-        res.status(500).send({status:500, message:e});
-    }
-    
+    const result:any = await stopApplicationScript(applicationName);
+
+    res.status(result.status).send(result);
 }
 
 export async function addServingFile(req, res){
