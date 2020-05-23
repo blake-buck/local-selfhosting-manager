@@ -249,8 +249,8 @@ async function modifyStartScript(startScript:string){
         startScript
     };
 
-    if(configDialogState.application.status === 'UNCONFIGURED'){
-        updatedValues.status = 'STOPPED';
+    if(configDialogState.application.status === UNCONFIGURED){
+        updatedValues.status = STOPPED;
     }
 
     const request = await fetch(

@@ -1,3 +1,7 @@
+const RUNNING = 'RUNNING';
+const STOPPED = 'STOPPED';
+const UNCONFIGURED = 'UNCONFIGURED';
+
 window.addEventListener('load', async (e) => {
 
     // initially render application cards

@@ -43,9 +43,9 @@ function createCard(application:Application){
     card.innerHTML +=
     `
     <footer class='center-column-layout'>
-        ${application.status === 'STOPPED' ? `<button id='startApplication'>Start Application</button>` : ''}
-        ${application.status === 'UNCONFIGURED' ? `<button id='startApplication'>Start Application</button>` : ''}
-        ${application.status === 'RUNNING' ? `<button id='stopApplication'>Stop Application</button>` : ''}
+        ${application.status === STOPPED ? `<button id='startApplication'>Start Application</button>` : ''}
+        ${application.status === UNCONFIGURED ? `<button id='startApplication'>Start Application</button>` : ''}
+        ${application.status === RUNNING ? `<button id='stopApplication'>Stop Application</button>` : ''}
         <button id='configureApplication'>Configure Application</button>
         <button id='deleteApplication'>Delete Application</button>
     </footer>
@@ -119,7 +119,7 @@ async function deleteApplication(id:string){
 }
 
 async function startApplication(application:Application, scriptArgs?:string){
-    if(application.status === 'UNCONFIGURED'){
+    if(application.status === UNCONFIGURED){
         return openSnackbar('You need to define an application start script first!', 'red');
     }
 

@@ -10,7 +10,7 @@ import * as pm2 from 'pm2';
 import { returnTable, queryItemById, addToDatabase, deleteItemById, updateItemById } from './database';
 import { deleteEverythingInDirectory } from './utils/deleteDirectory';
 import { createServingFile } from './utils/createServingFile';
-import { OPERATING_SYSTEM } from '../environment';
+import { OPERATING_SYSTEM, WINDOWS, FAVICON } from '../environment';
 import { getWindowsUser } from './utils/getWindowsUser';
 import { applicationsPath, rootDirectory } from './utils/paths';
 import { findFavicon } from './utils/findFavicon';
@@ -18,6 +18,10 @@ import { autoRestartApplications } from './utils/autoRestartApplications';
 
 
 const APPLICATIONS_TABLE = 'applications';
+
+const RUNNING = 'RUNNING';
+const STOPPED = 'STOPPED';
+const UNCONFIGURED = 'UNCONFIGURED';
 
 export async function getAllApplications(req, res){
 
@@ -79,7 +83,7 @@ export async function cloneRepo(req, res){
         exec(
             `git clone ${repoUrl}`, 
             {
-                cwd:path.join(__dirname, '../../applications')
+                cwd:applicationsPath
             }, 
             async (err, stdout, stderr) => {
                 if(err){
@@ -116,7 +120,7 @@ export async function refresh(req, res){
         
         for(let i=0; i < untrackedApplicationTitles.length; i++){
             const untrackedAppTitle = untrackedApplicationTitles[i];
-            await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle), status:'UNCONFIGURED'})
+            await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle), status:UNCONFIGURED})
         }
         
         res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} new apps to application database.`, table: await returnTable(APPLICATIONS_TABLE)});
@@ -227,7 +231,7 @@ export async function startApplication(req, res){
                 name:   applicationName,
                 script: startScript,
                 args:   scriptArgs,
-                cwd:    path.join(__dirname, `../../applications/${applicationPath}`)
+                cwd:   `${applicationsPath}/${applicationPath}`
             },
             async (err, proc) => {
                 if(err){
@@ -238,7 +242,7 @@ export async function startApplication(req, res){
 
                     try{
                         await autoRestartApplications();
-                        await updateItemById(APPLICATIONS_TABLE, applicationName, {status:'RUNNING'});
+                        await updateItemById(APPLICATIONS_TABLE, applicationName, {status:RUNNING});
                         res.status(200).send({status:200, message:`${applicationName} is started!`, table: await returnTable(APPLICATIONS_TABLE)});
                     }
                     catch(e){
@@ -268,7 +272,7 @@ export async function stopApplication(req, res){
             else if(proc){
                 try{
                     await autoRestartApplications();
-                    await updateItemById(APPLICATIONS_TABLE, applicationName, {status:'STOPPED'});
+                    await updateItemById(APPLICATIONS_TABLE, applicationName, {status:STOPPED});
                     res.status(200).send({status:200, message:`${applicationName} is stopped!`, table: await returnTable(APPLICATIONS_TABLE)});
                 }
                 catch(e){
@@ -299,7 +303,7 @@ export async function addServingFile(req, res){
 }
 
 export async function addToStartup(req, res){
-    if(OPERATING_SYSTEM === 'WINDOWS'){
+    if(OPERATING_SYSTEM === WINDOWS){
 
         // add a batch file to windows startup that runs pm2 resurrect 
         try{
@@ -327,7 +331,7 @@ export async function addToStartup(req, res){
 }
 
 export async function removeFromStartup(req, res){
-    if(OPERATING_SYSTEM === 'WINDOWS'){
+    if(OPERATING_SYSTEM === WINDOWS){
 
         // remove pm2 resurrect batch file from windows startup
         try{
@@ -355,7 +359,7 @@ export async function removeFromStartup(req, res){
 }
 
 export async function createShortcut(req, res){
-    if(OPERATING_SYSTEM === 'WINDOWS'){
+    if(OPERATING_SYSTEM === WINDOWS){
 
         // Create a shortcut file on user desktop
         try{
@@ -413,7 +417,7 @@ export async function updateApplication(req, res){
 
 export async function uploadFavicon(req, res){
     const { faviconData, applicationId } = req.body;
-    const faviconPath =  path.join(applicationsPath, applicationId, 'favicon.ico');
+    const faviconPath =  path.join(applicationsPath, applicationId, FAVICON);
 
     try{
         await fs.writeFile(
