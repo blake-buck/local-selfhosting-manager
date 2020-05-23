@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsc && node dist/index.js",
 
-    "refresh":"tsc && node dist/server/scripts/refresh.js INDEPENDENT"
+    "refresh":"tsc && node dist/server/scripts/refresh.js INDEPENDENT",
+    "delete":"tsc && node dist/server/scripts/deleteApplication.js INDEPENDENT"
   },
   "author": "",
   "license": "ISC",
