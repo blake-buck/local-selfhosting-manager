@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node dist/index.js"
+    "start": "tsc && node dist/index.js",
+
+    "refresh":"tsc && node dist/server/scripts/refresh.js INDEPENDENT"
   },
   "author": "",
   "license": "ISC",

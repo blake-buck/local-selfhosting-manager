@@ -10,18 +10,11 @@ import * as pm2 from 'pm2';
 import { returnTable, queryItemById, addToDatabase, deleteItemById, updateItemById } from './database';
 import { deleteEverythingInDirectory } from './utils/deleteDirectory';
 import { createServingFile } from './utils/createServingFile';
-import { OPERATING_SYSTEM, WINDOWS, FAVICON } from '../environment';
+import { OPERATING_SYSTEM, WINDOWS, FAVICON, APPLICATIONS_TABLE } from '../environment';
 import { getWindowsUser } from './utils/getWindowsUser';
 import { applicationsPath, rootDirectory } from './utils/paths';
-import { findFavicon } from './utils/findFavicon';
 import { autoRestartApplications } from './utils/autoRestartApplications';
-
-
-const APPLICATIONS_TABLE = 'applications';
-
-const RUNNING = 'RUNNING';
-const STOPPED = 'STOPPED';
-const UNCONFIGURED = 'UNCONFIGURED';
+import { refreshScript } from './scripts/refresh';
 
 export async function getAllApplications(req, res){
 
@@ -92,7 +85,7 @@ export async function cloneRepo(req, res){
                 }
                 // Don't like how this feels, should get to the bottom of why Cloning into... is output through stderr
                 else if(stderr.includes('Cloning into')){
-                   await refresh(req, res)
+                   await refresh(req, res);
                 }
                 else if(!stderr.includes('Cloning into')){
                     console.log("STDERR ", stderr);
@@ -110,24 +103,26 @@ export async function cloneRepo(req, res){
 }
 
 export async function refresh(req, res){
-
-    try{
-        const applicationsFolderContents = await fs.readdir(applicationsPath);
-        const applicationsInDatabase     = await returnTable(APPLICATIONS_TABLE);
+    const result = await refreshScript();
+    console.log(result);
+    res.status(result.status).send(result);
+    // try{
+    //     const applicationsFolderContents = await fs.readdir(applicationsPath);
+    //     const applicationsInDatabase     = await returnTable(APPLICATIONS_TABLE);
     
-        // if the app is in the applications folder and not in the database, add to database
-        const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.id === appTitle));
+    //     // if the app is in the applications folder and not in the database, add to database
+    //     const untrackedApplicationTitles = applicationsFolderContents.filter(appTitle => !applicationsInDatabase.some((dbApp:any) => dbApp.id === appTitle));
         
-        for(let i=0; i < untrackedApplicationTitles.length; i++){
-            const untrackedAppTitle = untrackedApplicationTitles[i];
-            await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle), status:UNCONFIGURED})
-        }
+    //     for(let i=0; i < untrackedApplicationTitles.length; i++){
+    //         const untrackedAppTitle = untrackedApplicationTitles[i];
+    //         await addToDatabase(APPLICATIONS_TABLE, untrackedAppTitle, {favicon: await findFavicon(untrackedAppTitle), status:UNCONFIGURED})
+    //     }
         
-        res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} new apps to application database.`, table: await returnTable(APPLICATIONS_TABLE)});
-    }
-    catch(e){
-        res.status(500).send({status:500, message:e});
-    }
+    //     res.status(200).send({status:200, message:`Added ${untrackedApplicationTitles.length} new apps to application database.`, table: await returnTable(APPLICATIONS_TABLE)});
+    // }
+    // catch(e){
+    //     res.status(500).send({status:500, message:e});
+    // }
     
 }
 
