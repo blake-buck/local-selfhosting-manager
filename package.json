@@ -10,8 +10,9 @@
     "delete":"tsc && node dist/server/scripts/deleteApplication.js INDEPENDENT",
     "start-app":"tsc && node dist/server/scripts/startApplication.js INDEPENDENT",
     "stop-app":"tsc && node dist/server/scripts/stopApplication.js INDEPENDENT",
-    "create-serve-file":"tsc && node dist/server/scripts/addServingFile.js INDEPENDENT"
-
+    "create-serve-file":"tsc && node dist/server/scripts/addServingFile.js INDEPENDENT",
+    "auto-start":"tsc && node dist/server/scripts/addToStartup.js INDEPENDENT",
+    "remove-auto-start":"tsc && node dist/server/scripts/removeFromStartup.js INDEPENDENT"
   },
   "author": "",
   "license": "ISC",

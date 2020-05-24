@@ -5,19 +5,17 @@ import { exec } from 'child_process';
 import * as filesystem from 'fs'
 const fs = filesystem.promises;
 
-import * as pm2 from 'pm2';
-
 import { returnTable, queryItemById, addToDatabase, updateItemById } from './database';
-import { createServingFile } from './utils/createServingFile';
-import { OPERATING_SYSTEM, WINDOWS, FAVICON, APPLICATIONS_TABLE, STOPPED } from '../environment';
+import { OPERATING_SYSTEM, WINDOWS, FAVICON, APPLICATIONS_TABLE } from '../environment';
 import { getWindowsUser } from './utils/getWindowsUser';
 import { applicationsPath, rootDirectory } from './utils/paths';
-import { autoRestartApplications } from './utils/autoRestartApplications';
 import { refreshScript } from './scripts/refresh';
 import { deleteApplicationScript } from './scripts/deleteApplication';
 import { startApplicationScript } from './scripts/startApplication';
 import { stopApplicationScript } from './scripts/stopApplication';
 import { addServingFileScript } from './scripts/addServingFile';
+import { addToStartupScript } from './scripts/addToStartup';
+import { removeFromStartupScript } from './scripts/removeFromStartup';
 
 export async function getAllApplications(req, res){
 
@@ -183,59 +181,15 @@ export async function addServingFile(req, res){
 }
 
 export async function addToStartup(req, res){
-    if(OPERATING_SYSTEM === WINDOWS){
-
-        // add a batch file to windows startup that runs pm2 resurrect 
-        try{
-            const username = await getWindowsUser();
-
-            await fs.writeFile(
-                `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\local-selfhosting-manager-reboot.bat`,
-                
-                'pm2 resurrect',
-                
-                {encoding:'utf8'}
-            );
-
-            res.status(200).send({status:200, message:'Applications will restart whenever computer is rebooted.'});
-        }
-        catch(e){
-            res.status(500).send({status:500, message:e})
-        }
-
-    }
-    else{
-        res.status(500).send({status:500, message:'Unrecognized operating system!'})
-    }
+    const result = await addToStartupScript();
     
+    res.status(result.status).send(result);
 }
 
 export async function removeFromStartup(req, res){
-    if(OPERATING_SYSTEM === WINDOWS){
-
-        // remove pm2 resurrect batch file from windows startup
-        try{
-            const username = await getWindowsUser();
-            const startupFilePath = `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\local-selfhosting-manager-reboot.bat`;
+    const result = await removeFromStartupScript();
     
-            try{
-                await fs.unlink(startupFilePath);
-            }
-            catch(e){
-                console.log(e);
-            }
-            
-            res.status(200).send({status:200, message:'Applications will not restart whenever computer is rebooted.'});
-
-        }
-        catch(e){
-            res.status(500).send({status:500, message:e});
-        }
-    }
-    else{
-        res.status(500).send({status:500, message:'Unrecognized operating system!'})
-    }
-    
+    res.status(result.status).send(result);
 }
 
 export async function createShortcut(req, res){
