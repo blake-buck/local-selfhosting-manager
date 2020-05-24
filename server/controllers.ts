@@ -1,14 +1,5 @@
-import * as path from 'path';
-
-import { exec } from 'child_process';
-
-import * as filesystem from 'fs'
-const fs = filesystem.promises;
-
 import { returnTable, queryItemById, addToDatabase, updateItemById } from './database';
-import { OPERATING_SYSTEM, WINDOWS, FAVICON, APPLICATIONS_TABLE } from '../environment';
-import { getWindowsUser } from './utils/getWindowsUser';
-import { applicationsPath, rootDirectory } from './utils/paths';
+import { APPLICATIONS_TABLE } from '../environment';
 import { refreshScript } from './scripts/refresh';
 import { deleteApplicationScript } from './scripts/deleteApplication';
 import { startApplicationScript } from './scripts/startApplication';
@@ -16,6 +7,10 @@ import { stopApplicationScript } from './scripts/stopApplication';
 import { addServingFileScript } from './scripts/addServingFile';
 import { addToStartupScript } from './scripts/addToStartup';
 import { removeFromStartupScript } from './scripts/removeFromStartup';
+import { uploadFaviconScript } from './scripts/uploadFavicon';
+import { createShortcutScript } from './scripts/createShortcut';
+import { cloneRepoScript } from './scripts/cloneRepo';
+import { applicationSetupScript } from './scripts/applicationSetup';
 
 export async function getAllApplications(req, res){
 
@@ -70,37 +65,16 @@ export async function addApplication(req, res){
 }
 
 export async function cloneRepo(req, res){
+    const { repoUrl } = req.body;
 
-    try{
-        const { repoUrl } = req.body;
+    const result:any = await cloneRepoScript(repoUrl);
 
-        exec(
-            `git clone ${repoUrl}`, 
-            {
-                cwd:applicationsPath
-            }, 
-            async (err, stdout, stderr) => {
-                if(err){
-                    console.log("ERR", err);
-                    res.status(400).send({status:400, message:err});
-                }
-                // Don't like how this feels, should get to the bottom of why Cloning into... is output through stderr
-                else if(stderr.includes('Cloning into')){
-                   await refresh(req, res);
-                }
-                else if(!stderr.includes('Cloning into')){
-                    console.log("STDERR ", stderr);
-                    
-                    res.status(400).send({status:400, message:stderr});
-                }
-            }
-        );
-
+    if(result.status === 200){
+        await refresh(req, res);
     }
-    catch(e){
-        res.status(500).send({status:500, message:e});
+    else{
+        res.status(result.status).send(result);
     }
-    
 }
 
 export async function refresh(req, res){
@@ -110,40 +84,11 @@ export async function refresh(req, res){
 }
 
 export async function applicationSetup(req, res){
-    try{
-        const { commands, application } = req.body;
+    const { commands, application } = req.body;
+    
+    const result:any = await applicationSetupScript(commands, application);
 
-        // run the user given commands e.g. "npm install" in the selected application
-        exec(
-            commands, 
-            {
-                cwd:`${applicationsPath}/${application}`
-            }, 
-            async (err, stdout, stderr) => {
-    
-                if(err){
-                    console.log("ERR", err);
-                    res.status(400).send({status:400, message:err});
-                }
-    
-                else if(stdout){
-                    console.log("STDOUT", stdout)
-                    res.status(200).send({status:200, message:stdout});
-                }
-    
-                else if(stderr){
-                    console.log("STDERR ", stderr);
-                    
-                    res.status(400).send({status:400, message:stderr});
-                }
-    
-            }
-        );
-    }
-    catch(e){
-        res.status(500).send({status:500, message:e});
-    }
-    
+    res.status(result.status).send(result);
 }
 
 export async function deleteApplication(req, res){
@@ -193,45 +138,11 @@ export async function removeFromStartup(req, res){
 }
 
 export async function createShortcut(req, res){
-    if(OPERATING_SYSTEM === WINDOWS){
+    const { shortcutName, applicationId, port } = req.body;
 
-        // Create a shortcut file on user desktop
-        try{
-            const username = await getWindowsUser();
-            const { shortcutName, applicationId, port } = req.body;
+    const result = await createShortcutScript(shortcutName, applicationId, port);
 
-            await updateItemById(APPLICATIONS_TABLE, applicationId, {shortcutPort:port})
-            
-            const shortcutPath = `C:\\Users\\${username}\\Desktop\\${shortcutName}.url`;
-            
-            let shortcutFileContents = `[InternetShortcut]\nURL=http://localhost:${port}`;
-
-            // if the application has a favicon, add it to the shortcut
-            const favicon = (await queryItemById(APPLICATIONS_TABLE, applicationId)).favicon;
-            let iconFile = path.join(rootDirectory, favicon);
-
-            if(favicon){
-                shortcutFileContents += `\nIconIndex=0\nIconFile=${iconFile}`
-            }
-
-            await fs.writeFile(
-                shortcutPath,
-
-                shortcutFileContents,
-
-                {encoding:'utf-8'}
-            );
-
-            res.status(200).send({status:200, message:'Shortcut added to user desktop.'});
-        }
-        catch(e){
-            res.status(500).send({status:500, message:e})
-        }
-        
-    }
-    else{
-        res.status(500).send({status:500, message:'Unrecognized operating system!'})
-    }
+    res.status(result.status).send(result);
 }
 
 export async function updateApplication(req, res){
@@ -251,30 +162,8 @@ export async function updateApplication(req, res){
 
 export async function uploadFavicon(req, res){
     const { faviconData, applicationId } = req.body;
-    const faviconPath =  path.join(applicationsPath, applicationId, FAVICON);
 
-    try{
-        await fs.writeFile(
-            faviconPath,
-            faviconData,
-            {encoding:'binary'}
-        );
-    
-        await updateItemById(
-            APPLICATIONS_TABLE,
-            applicationId,
-            {favicon:faviconPath.replace(/.+local-selfhosting-manager/, '')}
-        )
-    
-        res.status(200).send({
-            status:200, 
-            message:`${applicationId} favicon is updated`,
-            table: await returnTable(APPLICATIONS_TABLE)
-        });
-    }
-    catch(e){
-        res.status(500).send({status:500, message:e})
-    }
+    const result = await uploadFaviconScript(faviconData, applicationId);
 
-    
+    res.status(result.status).send(result);    
 }
