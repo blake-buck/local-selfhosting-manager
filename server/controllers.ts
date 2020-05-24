@@ -17,6 +17,7 @@ import { refreshScript } from './scripts/refresh';
 import { deleteApplicationScript } from './scripts/deleteApplication';
 import { startApplicationScript } from './scripts/startApplication';
 import { stopApplicationScript } from './scripts/stopApplication';
+import { addServingFileScript } from './scripts/addServingFile';
 
 export async function getAllApplications(req, res){
 
@@ -173,18 +174,12 @@ export async function stopApplication(req, res){
 }
 
 export async function addServingFile(req, res){
-    try{
-        // adds http server file to given application
-        const {applicationId, serveFrom, rerouteDefaultPathTo, port} = req.body;
+    // adds http server file to given application
+    const {applicationId, serveFrom, rerouteDefaultPathTo, port} = req.body;
 
-        await createServingFile(path.join(applicationsPath, applicationId), serveFrom, rerouteDefaultPathTo, port);
+    const result = await addServingFileScript(applicationId, serveFrom, port, rerouteDefaultPathTo);
 
-        res.status(200).send({status:200, message:'Serve file has been created.'});
-    }
-    catch(e){
-        res.status(500).send({status:500, message:e});
-    }
-    
+    res.status(result.status).send(result);
 }
 
 export async function addToStartup(req, res){
