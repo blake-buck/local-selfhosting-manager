@@ -133,9 +133,7 @@ async function startApplication(application:Application, scriptArgs?:string){
                 startScript:application.startScript,
                 scriptArgs:scriptArgs ? scriptArgs : ''
             }),
-            headers:{
-                'Content-Type':'application/json'
-            }
+            headers
         }
     );
 
@@ -161,9 +159,7 @@ async function stopApplication(application:Application){
             body:JSON.stringify({
                 applicationName:application.id
             }),
-            headers:{
-                'Content-Type':'application/json'
-            }
+            headers
         }
     );
 

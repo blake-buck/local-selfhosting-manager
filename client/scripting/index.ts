@@ -2,6 +2,10 @@ const RUNNING = 'RUNNING';
 const STOPPED = 'STOPPED';
 const UNCONFIGURED = 'UNCONFIGURED';
 
+const headers = {
+    'Content-Type':'application/json'
+}
+
 window.addEventListener('load', async (e) => {
 
     // initially render application cards

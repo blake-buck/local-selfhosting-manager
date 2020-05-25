@@ -194,9 +194,7 @@ async function applicationSetup(application:string, commands:string, childDirect
                 commands,
                 application: childDirectory ? `${application}/${childDirectory}`: application
             }),
-            headers:{
-                'Content-Type':'application/json'
-            }
+            headers
         }
     );
 
@@ -225,9 +223,7 @@ async function addServingFile(applicationId:string, serveFrom:string, rerouteDef
                 rerouteDefaultPathTo,
                 port
             }),
-            headers:{
-                'Content-Type':'application/json'
-            }
+            headers
         }
     );
 
@@ -260,9 +256,7 @@ async function modifyStartScript(startScript:string){
             body:JSON.stringify({
                 updatedValues
             }),
-            headers:{
-                'Content-Type':'application/json'
-            }
+            headers
         }
     );
 
@@ -287,9 +281,7 @@ async function createApplicationShortcut(application, portNumber:string){
                 port:portNumber, 
                 applicationId:application.id
             }),
-            headers:{
-                'Content-Type':'application/json'
-            }
+            headers
         }
     );
 
@@ -319,10 +311,8 @@ async function uploadFavicon(application, inputValue:Blob){
             '/api/application/favicon',
             {
                 method:'POST',
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({applicationId, faviconData})
+                body:JSON.stringify({applicationId, faviconData}),
+                headers
             }
         );
 
