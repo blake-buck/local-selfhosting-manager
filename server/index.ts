@@ -1,11 +1,11 @@
 import * as express from 'express';
 import * as bodyparser from 'body-parser';
 
-import {useApplicationRoutes} from './server/routes';
+import {useApplicationRoutes} from './routes';
 
-import { serveClient } from './server/utils/serveClient';
+import { serveClient } from './utils/serveClient';
 
-import {SERVER_PORT} from './environment';
+import {SERVER_PORT} from '../environment';
 
 
 const app = express();
