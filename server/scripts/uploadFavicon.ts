@@ -13,7 +13,7 @@ export async function uploadFaviconScript(faviconData, applicationId){
         await fs.writeFile(
             faviconPath,
             faviconData,
-            {encoding:'binary'}
+            {encoding:'base64'}
         );
     
         await updateItemById(

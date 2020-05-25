@@ -307,10 +307,12 @@ async function createApplicationShortcut(application, portNumber:string){
 
 async function uploadFavicon(application, inputValue:Blob){
     const reader = new FileReader();
-    reader.readAsBinaryString(inputValue);
+    reader.readAsDataURL(inputValue);
 
     reader.onload = async (e) => {
-        const faviconData = e.target.result;
+        const dataUrl:any = e.target.result;
+        const faviconData = dataUrl.replace(/.+base64,/, '');
+
         const applicationId = application.id;
 
         const request = await fetch(
