@@ -1,4 +1,6 @@
-function openCloningDialog(){
+import { STOPPED, UNCONFIGURED, RUNNING, headers } from "./index";
+import {renderApplicationCards} from './applications';
+export function openCloningDialog(){
     initializeCloningDialog();
 
     // display the dialog on step 1 

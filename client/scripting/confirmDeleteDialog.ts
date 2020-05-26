@@ -1,4 +1,6 @@
-function openConfirmationDialog(application:Application){
+import { deleteApplication } from "./applications";
+
+export function openConfirmationDialog(application:Application){
     const backdrop = document.createElement('div');
     backdrop.classList.add('dialog-backdrop');
     backdrop.classList.add('confirm-delete-dialog-backdrop');

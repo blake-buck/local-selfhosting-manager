@@ -1,3 +1,3 @@
-function toggleSidebar(){
+export function toggleSidebar(){
     document.querySelector('.sidebar').classList.toggle('closed');
 }

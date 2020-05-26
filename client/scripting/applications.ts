@@ -1,3 +1,8 @@
+import { STOPPED, UNCONFIGURED, RUNNING, headers } from "./index";
+import { openSnackbar } from "./snackbars";
+import { openConfigDialog } from "./configDialog";
+import { openConfirmationDialog } from "./confirmDeleteDialog";
+
 const applicationDiv = () => document.querySelector('.application-cards');
 
 function createCard(application:Application){
@@ -63,7 +68,7 @@ function createCard(application:Application){
 }
 
 
-function renderApplicationCards(applications:Application[]){
+export function renderApplicationCards(applications:Application[]){
     // clear out old application cards
     applicationDiv().innerHTML = '';
 
@@ -77,7 +82,7 @@ function renderApplicationCards(applications:Application[]){
     );
 }
 
-async function refreshApplications(){
+export async function refreshApplications(){
     // check the applications folder for user added apps
     const request: any = await fetch(
         '/api/applications/refresh', 
@@ -99,7 +104,7 @@ async function refreshApplications(){
 
 }
 
-async function deleteApplication(id:string){
+export async function deleteApplication(id:string){
     let request: any = await fetch(
         `/api/application/${id}`, 
         { method:'DELETE' }
@@ -118,7 +123,7 @@ async function deleteApplication(id:string){
     }
 }
 
-async function startApplication(application:Application, scriptArgs?:string){
+export async function startApplication(application:Application, scriptArgs?:string){
     if(application.status === UNCONFIGURED){
         return openSnackbar('You need to define an application start script first!', 'red');
     }
@@ -151,7 +156,7 @@ async function startApplication(application:Application, scriptArgs?:string){
     
 }
 
-async function stopApplication(application:Application){
+export async function stopApplication(application:Application){
     const request = await fetch(
         '/api/application/stop',
         {
@@ -178,7 +183,7 @@ async function stopApplication(application:Application){
 
 }
 
-async function autoStartApplications(){
+export async function autoStartApplications(){
     const request = await fetch(
         '/api/startup/add',
         {
@@ -197,7 +202,7 @@ async function autoStartApplications(){
     }
 }
 
-async function stopAutoStartApplications(){
+export async function stopAutoStartApplications(){
     const request = await fetch(
         '/api/startup/remove',
         {

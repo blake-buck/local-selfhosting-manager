@@ -1,6 +1,6 @@
 let snackbarList:Snackbar[] = [];
 
-function renderSnackbars(snackbars:Snackbar[]){
+export function renderSnackbars(snackbars:Snackbar[]){
     const snackbarDiv = document.querySelector('.snackbars');
 
     snackbarDiv.innerHTML = '';
@@ -12,7 +12,7 @@ function renderSnackbars(snackbars:Snackbar[]){
     );
 }
 
-function openSnackbar(message:string, color:snackbarColor, timeout?:number){
+export function openSnackbar(message:string, color:snackbarColor, timeout?:number){
     const id = Math.random();
 
     snackbarList.push({id, message, color, timeout});
@@ -22,7 +22,7 @@ function openSnackbar(message:string, color:snackbarColor, timeout?:number){
     return id;
 }
 
-function createSnackbarElement(snackbar:Snackbar){
+export function createSnackbarElement(snackbar:Snackbar){
     const {id, message, color} = snackbar;
 
     const wrapper = document.createElement('div');
@@ -44,7 +44,7 @@ function createSnackbarElement(snackbar:Snackbar){
     return wrapper;
 }
 
-function closeSnackbar(id:number){
+export function closeSnackbar(id:number){
     snackbarList = snackbarList.filter(snackbar => snackbar.id !== id);
     renderSnackbars(snackbarList);
 }

@@ -1,6 +1,10 @@
+import { UNCONFIGURED, STOPPED, headers } from "./index"
+import { renderApplicationCards } from "./applications"
+import { openSnackbar, closeSnackbar } from "./snackbars"
+
 let configDialogState:any = {}
 
-function openConfigDialog(application){
+export function openConfigDialog(application){
     configDialogState = {...configDialogState, application}
 
     // create dialog header
@@ -172,7 +176,7 @@ function openConfigDialog(application){
 
 }
 
-function closeConfigDialog(){
+export function closeConfigDialog(){
     // reset configDialogState
     configDialogState = {};
     // remove dialog from dialog

@@ -23,5 +23,9 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "pm2": "^4.4.0"
+  },
+  "devDependencies": {
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   }
 }
