@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc && node dist/server/index.js",
+
+    "build":"tsc && cp client/index.html dist/client/index.html  && webpack --config webpack.config.js",
+
     "refresh": "tsc && node dist/server/scripts/refresh.js INDEPENDENT",
     "delete": "tsc && node dist/server/scripts/deleteApplication.js INDEPENDENT",
     "start-app": "tsc && node dist/server/scripts/startApplication.js INDEPENDENT",

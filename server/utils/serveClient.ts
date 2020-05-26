@@ -16,7 +16,7 @@ export function serveClient(app){
                 res.sendFile(path.join(distJavascript, req.url));
             }
             else{
-                res.sendFile(path.join(distHtml, req.url));
+                res.sendFile(path.join(distJavascript, req.url));
             }
         }
     );
