@@ -6,14 +6,10 @@ export function serveClient(app){
 
     app.get(
         '*', 
-        express.static(distHtml),
         express.static(distJavascript),
         (req, res) => {
             if(req.url.includes('.ico')){
                 res.sendFile(path.join(applicationsPath, req.url.replace('applications/', '')));
-            }
-            else if(req.url.includes('.js')){
-                res.sendFile(path.join(distJavascript, req.url));
             }
             else{
                 res.sendFile(path.join(distJavascript, req.url));

@@ -1,12 +1,3 @@
-@import 'reset.css';
-@import 'cloning-dialog.css';
-@import 'config-dialog.css';
-@import 'applications.css';
-@import 'snackbars.css';
-@import 'header.css';
-@import 'sidebar.css';
-@import 'confirm-delete-dialog.css';
-
 body{
     color: #444444;
 }
