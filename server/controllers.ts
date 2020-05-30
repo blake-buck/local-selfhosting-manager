@@ -52,6 +52,19 @@ export async function getApplicationById(req, res){
     
 }
 
+export async function getItemFromDatabase(req, res){
+    try{
+        const {key} = req.params;
+
+        const item = await queryItemById(key);
+
+        res.status(200).send({status:200, item});
+    }
+    catch(e){
+        res.status(500).send({status:500, message:e});
+    }
+}
+
 export async function addApplication(req, res){
 
     try{

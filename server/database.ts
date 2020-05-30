@@ -33,11 +33,26 @@ export async function addToDatabase(tableToUpdate:string, key:any, value:any){
     return true;
 }
 
-
-export async function queryItemById(tableToQuery:string, id:string){
+export async function addItemToDatabase(key:string, value:any){
     const db = await accessDb();
-    const table = db[tableToQuery];
-    return table[id];
+
+    db[key] = value;
+
+    await saveDb(db);
+
+    return true;
+}
+
+
+export async function queryItemById(firstKey:string, id?:string){
+    const db = await accessDb();
+    const firstItem = db[firstKey];
+
+    if(id){
+        return firstItem[id];
+    }
+
+    return firstItem;
 }
 
 export async function deleteItemById(tableToQuery:string, id:string){

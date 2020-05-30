@@ -6,9 +6,8 @@ export const headers = {
     'Content-Type':'application/json'
 }
 
-import { renderApplicationCards, refreshApplications, stopAutoStartApplications, autoStartApplications } from './applications';
-import { toggleSidebar } from './sidebar';
-import { openCloningDialog } from './cloningDialog';
+import { renderApplicationCards } from './applications';
+import { toggleSidebar, renderSidebar } from './sidebar';
 
 
 window.addEventListener('load', async (e) => {
@@ -17,15 +16,11 @@ window.addEventListener('load', async (e) => {
     let applications: any = await fetch('/api/applications');
     applications = (await applications.json()).table;
 
+
+    renderSidebar();
+    
     renderApplicationCards(applications);
 
     // add event listeners to various buttons
-    document.querySelector('#openCloningDialog').addEventListener('click', openCloningDialog);
-
-    document.querySelector('#refreshApplications').addEventListener('click', refreshApplications);
-
-    document.querySelector('#removeFromStart').addEventListener('click', () => stopAutoStartApplications());
-    document.querySelector('#addToStart').addEventListener('click', () => autoStartApplications());
-
-    document.querySelectorAll('#menuButton').forEach(node => node.addEventListener('click', toggleSidebar));
+    document.querySelector('#menuButton').addEventListener('click', toggleSidebar);
 });

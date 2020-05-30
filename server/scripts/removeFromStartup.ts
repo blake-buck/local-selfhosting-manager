@@ -3,6 +3,7 @@ const fs = filesystem.promises;
 
 import { OPERATING_SYSTEM, WINDOWS, INDEPENDENT } from "../../environment";
 import { getWindowsUser } from "../utils/getWindowsUser";
+import { addItemToDatabase } from '../database';
 
 
 // first two process.argv variables are file paths, the rest are arguments passed to the script
@@ -28,6 +29,8 @@ export async function removeFromStartupScript(){
             catch(e){
                 return {status:500, message:e};
             }
+
+            await addItemToDatabase('autostart', false);
             
             return {status:200, message:'Applications will not restart whenever computer is rebooted.'};
 

@@ -3,6 +3,7 @@ const fs = filesystem.promises;
 
 import { OPERATING_SYSTEM, WINDOWS, INDEPENDENT } from "../../environment";
 import { getWindowsUser } from "../utils/getWindowsUser";
+import { addItemToDatabase } from '../database';
 
 
 // first two process.argv variables are file paths, the rest are arguments passed to the script
@@ -29,6 +30,8 @@ export async function addToStartupScript(){
                 
                 {encoding:'utf8'}
             );
+            
+            await addItemToDatabase('autostart', true);
 
             return {status:200, message:'Applications will restart whenever computer is rebooted.'};
         }
