@@ -4,7 +4,7 @@ const path = require('path');
 async function combineCSS(){
     let combinedCSS = '';
     const styleDirectoryPath = path.join(__dirname, './client/styles');
-    const distPath = path.join(__dirname, './dist/client/index.css');
+    const distPath = path.join(__dirname, './dist/client/');
 
     const styleDirectoryContents = await fs.readdir(styleDirectoryPath);
 
@@ -14,7 +14,10 @@ async function combineCSS(){
         combinedCSS += fileContents;
     }
 
-    await fs.writeFile(distPath, combinedCSS);
+    combinedCSS = combinedCSS.replace(/\n|\r/g, '').replace(/  /g, '').replace(/: /g, ':');
+    
+
+    await fs.writeFile(path.join(distPath, './index.css'), combinedCSS, {encoding:'utf8'});
 }
 
-combineCSS();
+combineCSS().then(res => console.log(res));
