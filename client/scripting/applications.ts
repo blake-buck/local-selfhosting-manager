@@ -21,7 +21,9 @@ function createCard(application:Application){
         card.innerHTML += 
         `
         <div class='card-media'> 
-            <img src='${application.favicon.replace(/\\/g, '/')}' alt='card media' />
+            <a href='${application.shortcutPort ? `http://localhost:${application.shortcutPort}` : '#'}' target='${application.shortcutPort ? '_blank' : '_self'}'>
+                <img src='${application.favicon.replace(/\\/g, '/')}' alt='card media' />
+            </a>
         </div>
         `
     }

@@ -35,6 +35,10 @@
     text-align: center;
 }
 
+.application-status{
+    text-align: center;
+}
+
 .application-status span{
     font-size:1.2em;
     font-family: sans-serif;

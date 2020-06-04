@@ -324,7 +324,8 @@ async function uploadFavicon(application, inputValue:Blob){
 
         if(response.status === 200){
             openSnackbar(response.message, 'green', 5000);
-            renderApplicationCards(response.table);
+            console.log('reload');
+            window.location.reload();
         }
         else{
             openSnackbar(response.message, 'red', 5000);

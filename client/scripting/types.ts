@@ -4,6 +4,7 @@ interface Application{
     favicon:string | undefined;
     startScript:string | undefined;
     status:string | undefined;
+    shortcutPort:number | undefined;
 }
 
 // for whatever reason default Elements dont have the value property; this custom interface fixes that
