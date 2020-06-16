@@ -10,6 +10,8 @@ interface Application{
 // for whatever reason default Elements dont have the value property; this custom interface fixes that
 interface InputElement extends Element{
     value:string;
+    files?:FileList
+    blur?:any;
 }
 
 interface Snackbar{

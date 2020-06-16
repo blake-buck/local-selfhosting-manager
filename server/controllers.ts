@@ -11,6 +11,10 @@ import { uploadFaviconScript } from './scripts/uploadFavicon';
 import { createShortcutScript } from './scripts/createShortcut';
 import { cloneRepoScript } from './scripts/cloneRepo';
 import { applicationSetupScript } from './scripts/applicationSetup';
+import { listApplicationContents } from './utils/listDirectoryContents';
+
+import * as path from 'path';
+import { applicationsPath } from './utils/paths';
 
 export async function getAllApplications(req, res){
 
@@ -50,6 +54,14 @@ export async function getApplicationById(req, res){
         res.status(500).send({status:500, message:e});
     }
     
+}
+
+export async function getApplicationDirectoryFiles(req, res){
+    console.log(req.params.id);
+    let contents = await listApplicationContents(
+        path.join(applicationsPath, req.params.id)
+    );
+    res.status(200).send({status:200, contents})
 }
 
 export async function getItemFromDatabase(req, res){

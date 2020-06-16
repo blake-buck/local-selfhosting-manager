@@ -1,10 +1,11 @@
 import { UNCONFIGURED, STOPPED, headers } from "./index"
 import { renderApplicationCards } from "./applications"
 import { openSnackbar, closeSnackbar } from "./snackbars"
+import { renderDirectoryPicker } from "./applicationDirectoryPicker"
 
 let configDialogState:any = {}
 
-export function openConfigDialog(application){
+export async function openConfigDialog(application){
     configDialogState = {...configDialogState, application}
 
     // create dialog header
@@ -150,6 +151,16 @@ export function openConfigDialog(application){
         modifyStartScript(startScriptText);
     });
 
+    document.querySelector('#directoryToServe').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const element:InputElement = document.querySelector('#directoryToServe');
+        element.blur();
+        let dir:string = await openDirectoryPicker(application);
+        console.log('DIR', dir)
+        element.setAttribute('value', dir);
+        
+    });
+
     document.querySelector('.config-serving-file button').addEventListener('click', () => {
         const directoryToServeText = document.querySelector('#directoryToServe')['value']; 
         const rerouteDefaultPathToText = document.querySelector('#rerouteDefaultPathTo')['value']; 
@@ -173,7 +184,6 @@ export function openConfigDialog(application){
     })
     
     document.querySelector('.config-dialog-body header button').addEventListener('click', closeConfigDialog);
-
 }
 
 export function closeConfigDialog(){
@@ -332,4 +342,10 @@ async function uploadFavicon(application, inputValue:Blob){
         }
 
     }
+}
+
+async function openDirectoryPicker(application){
+    let val:string = await renderDirectoryPicker(application.id);
+    console.log("BAL", val);
+    return val;
 }

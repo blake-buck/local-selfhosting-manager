@@ -8,6 +8,7 @@ export const headers = {
 
 import { renderApplicationCards } from './applications';
 import { toggleSidebar, renderSidebar } from './sidebar';
+import { renderDirectoryPicker } from './applicationDirectoryPicker';
 
 
 window.addEventListener('load', async (e) => {
