@@ -12,6 +12,9 @@
 }
 .directory-picker{
     border:3px solid black;
+    min-width:400px;
+    max-height:90vh;
+    overflow:auto;
 }
 
 .directory, .file{

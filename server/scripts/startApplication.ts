@@ -14,7 +14,7 @@ if(process.argv[2] === INDEPENDENT){
     const startScript = process.argv[5];
     const scriptArgs = process.argv[6];
 
-    startApplicationScript(applicationName, applicationPath, startScript, scriptArgs)
+    startApplicationScript(applicationName, startScript, scriptArgs)
         .then(res => {
             console.log(res);
             process.exit();
@@ -22,22 +22,23 @@ if(process.argv[2] === INDEPENDENT){
 }
 
 
-export async function startApplicationScript(applicationName, applicationPath, startScript, scriptArgs){
+export async function startApplicationScript(applicationName, startScript, scriptArgs){
     try{
         // daemonize given application
-        
+        console.log('START SCRIPT ', startScript);
+        console.log('APPLICATIONS PATH ', applicationsPath)
         return new Promise((resolve, reject) => {
             pm2.start(
                 {
                     name:   applicationName,
                     script: startScript,
                     args:   scriptArgs,
-                    cwd:   `${applicationsPath}/${applicationPath}`
+                    cwd:   applicationsPath
                 },
                 async (err, proc) => {
                     if(err){
                         console.log(err);
-                        resolve({status:500, message:`Error starting ${applicationName}`});
+                        resolve({status:500, message:`Error starting ${applicationName}`, err});
                     }
                     else if(proc){
 

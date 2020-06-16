@@ -135,7 +135,6 @@ export async function startApplication(application:Application, scriptArgs?:stri
         {
             method:'POST',
             body:JSON.stringify({
-                applicationPath:application.id,
                 applicationName:application.id,
                 startScript:application.startScript,
                 scriptArgs:scriptArgs ? scriptArgs : ''

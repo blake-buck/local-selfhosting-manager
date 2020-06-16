@@ -125,9 +125,9 @@ export async function deleteApplication(req, res){
 }
 
 export async function startApplication(req, res){
-    const { applicationPath, applicationName, startScript, scriptArgs } = req.body;
+    const { applicationName, startScript, scriptArgs } = req.body;
 
-    const result:any = await startApplicationScript(applicationName, applicationPath, startScript, scriptArgs);
+    const result:any = await startApplicationScript(applicationName, startScript, scriptArgs);
 
     res.status(result.status).send(result);    
 }

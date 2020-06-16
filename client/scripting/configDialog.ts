@@ -146,6 +146,14 @@ export async function openConfigDialog(application){
         applicationSetup(application.id, commands, childDirectory)
     });
 
+    document.querySelector('#applicationStartScriptInput').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const element:InputElement = document.querySelector('#applicationStartScriptInput');
+        element.blur();
+        let startScript:string = await openDirectoryPicker(application);
+        element.setAttribute('value', startScript);
+    });
+
     document.querySelector('.config-application-start-script button').addEventListener('click', () => {
         const startScriptText = document.querySelector('#applicationStartScriptInput')['value'];
         modifyStartScript(startScriptText);
@@ -156,9 +164,15 @@ export async function openConfigDialog(application){
         const element:InputElement = document.querySelector('#directoryToServe');
         element.blur();
         let dir:string = await openDirectoryPicker(application);
-        console.log('DIR', dir)
         element.setAttribute('value', dir);
-        
+    });
+
+    document.querySelector('#rerouteDefaultPathTo').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const element:InputElement = document.querySelector('#rerouteDefaultPathTo');
+        element.blur();
+        let rerouteTo:string = await openDirectoryPicker(application);
+        element.setAttribute('value', rerouteTo);
     });
 
     document.querySelector('.config-serving-file button').addEventListener('click', () => {

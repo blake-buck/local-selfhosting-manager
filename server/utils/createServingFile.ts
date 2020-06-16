@@ -19,12 +19,12 @@ export async function createServingFile(applicationPath, serveFrom, rerouteDefau
         const serveFrom = '${serveFrom}';
             const rerouteDefaultPathTo = '${rerouteDefaultPathTo}';
 
-            app.get('*', express.static(path.join(__dirname, serveFrom)), (req, res) => {
+            app.get('*', express.static(path.join(__dirname, '..',  serveFrom)), (req, res) => {
                 if(rerouteDefaultPathTo && req.url === '/'){
-                    res.sendFile(path.join(__dirname, serveFrom, rerouteDefaultPathTo));
+                    res.sendFile(path.join(__dirname, '..', rerouteDefaultPathTo));
                 }
                 else{
-                    res.sendFile(path.join(__dirname, serveFrom));
+                    res.sendFile(path.join(__dirname, '..', serveFrom));
                 }
                 
             })
