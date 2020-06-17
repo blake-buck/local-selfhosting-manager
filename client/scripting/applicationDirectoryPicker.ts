@@ -8,7 +8,7 @@ function resetState(){
     canceled = false;
 }
 
-function listDirectoryContents(directoryContents, directoryTitle, path, nestingLevel=0){
+function listDirectoryContents(directoryContents, directoryTitle, path, nestingLevel=0, renderFiles){
     let directoryKeys = Object.keys(directoryContents);
 
     let stringToPrint = '';
@@ -19,11 +19,11 @@ function listDirectoryContents(directoryContents, directoryTitle, path, nestingL
         const direntName = directoryKeys[i];
 
         if(typeof directoryContents[direntName] === 'object' && directoryContents[direntName] !== undefined){
-            directories += listDirectoryContents(directoryContents[direntName], direntName, `${path}/${direntName}`, nestingLevel+1);
+            directories += listDirectoryContents(directoryContents[direntName], direntName, `${path}/${direntName}`, nestingLevel+1, renderFiles);
             
         }
         else{
-            files += `<li data-path='${path}' style='margin-left:5px' class='file'>${direntName}</li>`;
+            files += `<li data-path='${path}' style='margin-left:5px' class='file ${renderFiles ? '' : 'hide'}'>${direntName}</li>`;
         }
     }
 
@@ -39,7 +39,7 @@ function listDirectoryContents(directoryContents, directoryTitle, path, nestingL
 
 
 
-export async function renderDirectoryPicker(applicationId){
+export async function renderDirectoryPicker(applicationId, renderFiles){
     return new Promise<string>(async (resolve, reject) => {
         const request = await fetch(`/api/application/${applicationId}/directory`);
         const response = await request.json();
@@ -52,7 +52,7 @@ export async function renderDirectoryPicker(applicationId){
     
         div.innerHTML = `
             <div class='dialog-body directory-picker'>
-                ${listDirectoryContents(directoryContents, applicationId, applicationId)}
+                ${listDirectoryContents(directoryContents, applicationId, applicationId, 0, renderFiles)}
                 <button id='cancel'>Cancel</button>
                 <button id='selectItem'>Select</button>
             </div>

@@ -56,3 +56,7 @@
 .selected-item{
     font-weight: bold;
 }
+
+.file.hide{
+    display:none;
+}

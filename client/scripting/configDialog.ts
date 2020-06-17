@@ -34,7 +34,7 @@ export async function openConfigDialog(application){
             <label>Commands to Run</label>
             <input id='commandsInput' placeholder='Commands to Run' />
 
-            <label>Child Directory (optional</label>
+            <label>Child Directory (optional)</label>
             <input id='applicationChildDirectoryInput' placeholder='e.g. subfolder/anotherFolder' />
 
             <button>Run Commands</button>
@@ -75,13 +75,13 @@ export async function openConfigDialog(application){
             </b>
         </h3>
         <label>Directory to Serve</label>
-        <input id='directoryToServe' placeholder='Directory to serve e.g. build, dist. Leave blank if root directory' />
+        <input id='directoryToServe' value='${application.serveFrom ?  application.serveFrom : ''}' placeholder='Directory to serve e.g. build, dist. Leave blank if root directory' />
 
         <label>Port to host on</label>
-        <input id='portInput' placeholder='Port to host on' />
+        <input id='portInput' value='${application.shortcutPort ?  application.shortcutPort : ''}' placeholder='Port to host on' />
 
         <label>Reroute default path to</label>
-        <input id='rerouteDefaultPathTo' placeholder='Reroute default path to this file (optional)' />
+        <input id='rerouteDefaultPathTo' value='${application.rerouteDefaultPathTo ?  application.rerouteDefaultPathTo : ''}' placeholder='Reroute default path to this file (optional)' />
         <button>Add Serving File</button>
     </div>
     `
@@ -140,6 +140,14 @@ export async function openConfigDialog(application){
             `
         );
 
+    document.querySelector('#applicationChildDirectoryInput').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const element:InputElement = document.querySelector('#applicationChildDirectoryInput');
+        element.blur();
+        let directory:string = await openDirectoryPicker(application, false);
+        element.setAttribute('value', directory);
+    });
+
     document.querySelector('.config-application-setup button').addEventListener('click', () => {
         const commands = document.querySelector('#commandsInput')['value'];
         const childDirectory = document.querySelector('#applicationChildDirectoryInput')['value'];
@@ -150,7 +158,7 @@ export async function openConfigDialog(application){
         e.preventDefault();
         const element:InputElement = document.querySelector('#applicationStartScriptInput');
         element.blur();
-        let startScript:string = await openDirectoryPicker(application);
+        let startScript:string = await openDirectoryPicker(application, true);
         element.setAttribute('value', startScript);
     });
 
@@ -163,7 +171,7 @@ export async function openConfigDialog(application){
         e.preventDefault();
         const element:InputElement = document.querySelector('#directoryToServe');
         element.blur();
-        let dir:string = await openDirectoryPicker(application);
+        let dir:string = await openDirectoryPicker(application, false);
         element.setAttribute('value', dir);
     });
 
@@ -171,7 +179,7 @@ export async function openConfigDialog(application){
         e.preventDefault();
         const element:InputElement = document.querySelector('#rerouteDefaultPathTo');
         element.blur();
-        let rerouteTo:string = await openDirectoryPicker(application);
+        let rerouteTo:string = await openDirectoryPicker(application, true);
         element.setAttribute('value', rerouteTo);
     });
 
@@ -210,7 +218,7 @@ export function closeConfigDialog(){
 async function applicationSetup(application:string, commands:string, childDirectory:string){
     const initialSnackbar = 
         openSnackbar(
-            `Running ${commands} in ${ childDirectory ? `${application}/${childDirectory}`: application}`,
+            `Running ${commands} in ${ childDirectory ? childDirectory : application}`,
             'gray'
         );
 
@@ -220,7 +228,7 @@ async function applicationSetup(application:string, commands:string, childDirect
             method:'POST',
             body:JSON.stringify({
                 commands,
-                application: childDirectory ? `${application}/${childDirectory}`: application
+                application: childDirectory ? childDirectory : application
             }),
             headers
         }
@@ -255,7 +263,24 @@ async function addServingFile(applicationId:string, serveFrom:string, rerouteDef
         }
     );
 
+
     const response = await request.json();
+
+    const modifyShortcutPort = await fetch(
+        `/api/application/${applicationId}`,
+        {
+            method:'PUT',
+            body:JSON.stringify({
+                updatedValues:{
+                    serveFrom,
+                    rerouteDefaultPathTo,
+                    shortcutPort:port
+                }
+            }),
+            headers
+        }
+    );
+
 
     console.log(response);
 
@@ -358,8 +383,8 @@ async function uploadFavicon(application, inputValue:Blob){
     }
 }
 
-async function openDirectoryPicker(application){
-    let val:string = await renderDirectoryPicker(application.id);
+async function openDirectoryPicker(application, renderFiles){
+    let val:string = await renderDirectoryPicker(application.id, renderFiles);
     console.log("BAL", val);
     return val;
 }
