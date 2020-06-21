@@ -14,7 +14,9 @@
     "stop-app": "tsc && node dist/server/scripts/stopApplication.js INDEPENDENT",
     "create-serve-file": "tsc && node dist/server/scripts/addServingFile.js INDEPENDENT",
     "auto-start": "tsc && node dist/server/scripts/addToStartup.js INDEPENDENT",
-    "remove-auto-start": "tsc && node dist/server/scripts/removeFromStartup.js INDEPENDENT"
+    "remove-auto-start": "tsc && node dist/server/scripts/removeFromStartup.js INDEPENDENT",
+    "initialize":"node applicationSetup.js",
+    "setup-windows":"npm run initialize WINDOWS && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",
