@@ -1,6 +1,4 @@
-import * as filesystem from 'fs'
-import { applicationsPath } from './paths';
-import * as path from 'path';
+import * as filesystem from 'fs';
 const fs = filesystem.promises;
 
 export async function listApplicationContents(path:string){
@@ -19,11 +17,20 @@ export async function listApplicationContents(path:string){
             contents[dirent.name] = true;
         }
 
-        if(dirent.isDirectory() && dirent.name !== '.git'){
+        if(dirent.isDirectory() && directoryIsValidTarget(dirent.name)){
             contents[dirent.name] = await listApplicationContents(`${path}/${dirent.name}`);
         }
 
     }
 
     return contents;
+}
+
+function directoryIsValidTarget(name){
+    const validDirectories = [
+        'node_modules',
+        '.git'
+    ];
+
+    return !(validDirectories.includes(name));
 }

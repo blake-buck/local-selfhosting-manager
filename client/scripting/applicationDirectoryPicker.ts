@@ -53,8 +53,10 @@ export async function renderDirectoryPicker(applicationId, renderFiles){
         div.innerHTML = `
             <div class='dialog-body directory-picker'>
                 ${listDirectoryContents(directoryContents, applicationId, applicationId, 0, renderFiles)}
-                <button id='cancel'>Cancel</button>
-                <button id='selectItem'>Select</button>
+                <footer>
+                    <button id='cancel'>Cancel</button>
+                    <button id='selectItem'>Select</button>
+                </footer>
             </div>
         `;
         ;

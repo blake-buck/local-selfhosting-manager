@@ -15,6 +15,10 @@
     min-width:400px;
     max-height:90vh;
     overflow:auto;
+
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .directory, .file{
@@ -59,4 +63,10 @@
 
 .file.hide{
     display:none;
+}
+
+.dialog-body.directory-picker footer{
+    width:100%;
+    display:flex;
+    justify-content: flex-end;
 }
