@@ -1,11 +1,9 @@
 let selectedItem = '';
-let submitted = false;
-let canceled = false;
 
-function resetState(){
+function clearDialog(){
+    document.querySelector('.selected-item')?.classList.remove('selected-item');
+    document.body.removeChild(document.querySelector('.directory-picker-backdrop'));
     selectedItem = '';
-    submitted = false;
-    canceled = false;
 }
 
 function listDirectoryContents(directoryContents, directoryTitle, path, nestingLevel=0, renderFiles){
@@ -36,8 +34,6 @@ function listDirectoryContents(directoryContents, directoryTitle, path, nestingL
     </ul>
     ` 
 }
-
-
 
 export async function renderDirectoryPicker(applicationId, renderFiles){
     return new Promise<string>(async (resolve, reject) => {
@@ -83,38 +79,20 @@ export async function renderDirectoryPicker(applicationId, renderFiles){
             node.parentElement.parentElement.classList.toggle('collapsed-directory');
         }));
     
-        div.querySelector('button#cancel').addEventListener('click', () => cancel());
-        div.querySelector('button#selectItem').addEventListener('click', () => returnSelectedItem());
+        div.querySelector('button#cancel').addEventListener('click', () => cancel(reject));
+        div.querySelector('button#selectItem').addEventListener('click', () => returnSelectedItem(resolve));
     
         document.body.appendChild(div);
-
-        const interval = setInterval(
-            () => {
-                if(submitted){
-                    resolve(selectedItem);
-                    clearInterval(interval);
-                    resetState();
-                }
-                else if(canceled){
-                    reject('string');
-                    clearInterval(interval);
-                    resetState();
-                }
-            },
-            250
-        );
     });
    
 }
 
-function returnSelectedItem(){
-    document.querySelector('.selected-item')?.classList.remove('selected-item');
-    submitted = true;
-    document.body.removeChild(document.querySelector('.directory-picker-backdrop'));
+function returnSelectedItem(resolve){
+    resolve(selectedItem);
+    clearDialog();
 }
 
-function cancel(){
-    document.querySelector('.selected-item')?.classList.remove('selected-item');
-    canceled = true;
-    document.body.removeChild(document.querySelector('.directory-picker-backdrop'));
+function cancel(reject){
+    reject();
+    clearDialog();
 }
