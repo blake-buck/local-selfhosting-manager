@@ -16,7 +16,9 @@
     "auto-start": "tsc && node dist/server/scripts/addToStartup.js INDEPENDENT",
     "remove-auto-start": "tsc && node dist/server/scripts/removeFromStartup.js INDEPENDENT",
     "initialize":"node applicationSetup.js",
-    "setup-windows":"npm run initialize WINDOWS && npm install && npm run build"
+    "setup-windows":"npm run initialize WINDOWS && npm install && npm run build",
+    "setup-ubuntu":"npm run initialize UBUNTU && npm install && npm run build",
+    "setup-mac":"npm run initialize MACOS && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",

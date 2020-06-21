@@ -5,6 +5,9 @@ export const SERVER_PORT:string = process.env.PORT;
 export const OPERATING_SYSTEM:string =  process.env.OPERATING_SYSTEM;
 
 export const WINDOWS = 'WINDOWS';
+export const UBUNTU  = 'UBUNTU';
+export const MACOS   = 'MACOS';
+
 export const FAVICON = 'favicon.ico';
 
 export const INDEPENDENT = 'INDEPENDENT';
