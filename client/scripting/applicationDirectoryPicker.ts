@@ -1,36 +1,72 @@
+// HTML constants
+const DATA_PATH = 'data-path';
+
+// CSS class/id constants
+const SELECTED_ITEM = 'selected-item';
+const SELECTED_ITEM_CLASS = `.${SELECTED_ITEM}`;
+
+const DIRECTORY_PICKER_BACKDROP = 'directory-picker-backdrop';
+const DIRECTORY_PICKER_BACKDROP_CLASS = `.${DIRECTORY_PICKER_BACKDROP}`;
+
+const DIRECTORY = 'directory';
+const DIRECTORY_CLASS = `.${DIRECTORY}`;
+
+const FILE = 'file';
+const FILE_CLASS = `.${FILE}`;
+
+const COLLAPSED_DIRECTORY = 'collapsed-directory';
+const EXPANDED_DIRECTORY = 'expanded-directory';
+
+const CANCEL = 'cancel';
+const SELECT_ITEM = 'selectItem';
+
+// JS constants
+const CLICK = 'click';
+
+// Directory picker "state"
 let selectedItem = '';
 
-function clearDialog(){
-    document.querySelector('.selected-item')?.classList.remove('selected-item');
-    document.body.removeChild(document.querySelector('.directory-picker-backdrop'));
+
+// Functions
+function closeDialog(){
+    document.querySelector(SELECTED_ITEM_CLASS)?.classList.remove(SELECTED_ITEM);
+    document.body.removeChild(document.querySelector(DIRECTORY_PICKER_BACKDROP_CLASS));
     selectedItem = '';
 }
 
-function listDirectoryContents(directoryContents, directoryTitle, path, nestingLevel=0, renderFiles){
+function listDirectoryContents(directoryContents, directoryTitle, path, nestingLevel, renderFiles){
     let directoryKeys = Object.keys(directoryContents);
 
-    let stringToPrint = '';
-    let directories = '';
-    let files = '';
+    let combinedHTML = '';
+    let directoryHTML = '';
+    let fileHTML = '';
 
     for(let i=0; i < directoryKeys.length; i++){
         const direntName = directoryKeys[i];
+        const childDirectory = directoryContents[direntName];
+        const isChildDirectory = typeof childDirectory === 'object';
 
-        if(typeof directoryContents[direntName] === 'object' && directoryContents[direntName] !== undefined){
-            directories += listDirectoryContents(directoryContents[direntName], direntName, `${path}/${direntName}`, nestingLevel+1, renderFiles);
+        if(isChildDirectory){
+            directoryHTML += listDirectoryContents(
+                childDirectory, 
+                direntName, 
+                `${path}/${direntName}`, 
+                nestingLevel+1, 
+                renderFiles
+            );
             
         }
         else{
-            files += `<li data-path='${path}' style='margin-left:5px' class='file ${renderFiles ? '' : 'hide'}'>${direntName}</li>`;
+            fileHTML += `<li ${DATA_PATH}='${path}' style='margin-left:5px' class='${FILE} ${renderFiles ? '' : 'hide'}'>${direntName}</li>`;
         }
     }
 
-    stringToPrint = directories + files;
+    combinedHTML = directoryHTML + fileHTML;
 
     return `
-    <ul class='collapsed-directory' style='margin-left:${nestingLevel * 10}px;'>
-        <p data-path='${path}' class='directory'> <b>&#8744;</b> ${directoryTitle}</p>
-        ${stringToPrint}
+    <ul class='${COLLAPSED_DIRECTORY}' style='margin-left: ${nestingLevel * 10}px;'>
+        <p ${DATA_PATH}='${path}' class='directory'> <b>&#8744;</b> ${directoryTitle}</p>
+        ${combinedHTML}
     </ul>
     ` 
 }
@@ -42,57 +78,63 @@ export async function renderDirectoryPicker(applicationId, renderFiles){
     
         let directoryContents = response.contents;
         
-        const div = document.createElement('div');
+        const directoryPickerElement = document.createElement('div');
     
-        div.classList.add('directory-picker-backdrop')
+        directoryPickerElement.classList.add(DIRECTORY_PICKER_BACKDROP)
     
-        div.innerHTML = `
+        directoryPickerElement.innerHTML = `
             <div class='dialog-body directory-picker'>
                 ${listDirectoryContents(directoryContents, applicationId, applicationId, 0, renderFiles)}
                 <footer>
-                    <button id='cancel'>Cancel</button>
-                    <button id='selectItem'>Select</button>
+                    <button id='${CANCEL}'>Cancel</button>
+                    <button id='${SELECT_ITEM}'>Select</button>
                 </footer>
             </div>
         `;
         ;
         
-        div.querySelectorAll('.file').forEach(node => node.addEventListener('click', e => {
-                document.querySelector('.selected-item')?.classList.remove('selected-item');
-                node.classList.add('selected-item');
-                selectedItem = `${node.getAttribute('data-path')}/${node['innerText']}`;
-            }
-        ));
+        directoryPickerElement.querySelectorAll(FILE_CLASS).forEach(node => selectItemClickListener(node, true));
         
-        div.querySelectorAll('.directory').forEach(node => {
-            document.querySelector('.selected-item')
-            node.addEventListener('click', () => {
-                document.querySelector('.selected-item')?.classList.remove('selected-item');
-                node.classList.add('selected-item');
-                selectedItem = node.getAttribute('data-path');
-            })
-        });
+        directoryPickerElement.querySelectorAll(DIRECTORY_CLASS).forEach(node => selectItemClickListener(node, false));
     
-        div.querySelectorAll('.directory b').forEach(node => node.addEventListener('click', () => {
-            document.querySelector('.selected-item')?.classList.remove('selected-item');
-            node.parentElement.parentElement.classList.toggle('expanded-directory');
-            node.parentElement.parentElement.classList.toggle('collapsed-directory');
-        }));
+        directoryPickerElement.querySelectorAll(`${DIRECTORY_CLASS} b`).forEach(node => toggleDirectoryOpenClickListener(node));
     
-        div.querySelector('button#cancel').addEventListener('click', () => cancel(reject));
-        div.querySelector('button#selectItem').addEventListener('click', () => returnSelectedItem(resolve));
+        directoryPickerElement.querySelector(`#${CANCEL}`).addEventListener(CLICK, () => cancel(reject));
+        directoryPickerElement.querySelector(`#${SELECT_ITEM}`).addEventListener(CLICK, () => returnSelectedItem(resolve));
     
-        document.body.appendChild(div);
+        document.body.appendChild(directoryPickerElement);
     });
    
 }
 
 function returnSelectedItem(resolve){
     resolve(selectedItem);
-    clearDialog();
+    closeDialog();
 }
 
 function cancel(reject){
     reject();
-    clearDialog();
+    closeDialog();
+}
+
+function toggleDirectoryOpenClickListener(node){
+    node.addEventListener(CLICK, () => toggleDirectoryOpen(node));
+}
+
+function toggleDirectoryOpen(node){
+    node.parentElement.parentElement.classList.toggle(EXPANDED_DIRECTORY);
+    node.parentElement.parentElement.classList.toggle(COLLAPSED_DIRECTORY);
+}
+
+function selectItemClickListener(node, isFile:boolean){
+    node.addEventListener(CLICK, () => selectItem(node, false))
+}
+
+function selectItem(node, isFile:boolean){
+    document.querySelector(SELECTED_ITEM_CLASS)?.classList.remove(SELECTED_ITEM);
+    node.classList.add(SELECTED_ITEM);
+    selectedItem = node.getAttribute(DATA_PATH);
+    if(isFile){
+        selectedItem += ('/' + node['innerText']);
+    }
 }
