@@ -20,4 +20,4 @@ async function combineCSS(){
     await fs.writeFile(path.join(distPath, './index.css'), combinedCSS, {encoding:'utf8'});
 }
 
-combineCSS().then(res => console.log(res));
+combineCSS().then(res => console.log('CSS combined successfully.'));
