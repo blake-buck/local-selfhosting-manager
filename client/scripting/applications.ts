@@ -1,8 +1,24 @@
-import { STOPPED, UNCONFIGURED, RUNNING, headers } from "./index";
 import { openSnackbar } from "./snackbars";
 import { openConfigDialog } from "./configDialog";
 import { openConfirmationDialog } from "./confirmDeleteDialog";
 
+import { handleResponse, CONSTANTS, headers} from "./service";
+const {CLICK , STOPPED, UNCONFIGURED, RUNNING} = CONSTANTS;
+const {RED} = CONSTANTS.SNACKBAR_COLORS;
+
+// CSS class/id constants
+const START_APPLICATION = 'startApplication';
+const STOP_APPLICATION = 'stopApplication';
+const CONFIGURE_APPLICATION = 'configureApplication';
+const DELETE_APPLICATION = 'deleteApplication';
+
+const applicationButtonHashMap = {
+    [STOPPED]:`<button id='${START_APPLICATION}'>Start Application</button>`,
+    [UNCONFIGURED]:`<button id='${START_APPLICATION}'>Start Application</button>`,
+    [RUNNING]:`<button id='${STOP_APPLICATION}'>Stop Application</button>`,
+};
+
+// functions
 const applicationDiv = () => document.querySelector('.application-cards');
 
 function createCard(application:Application){
@@ -50,21 +66,18 @@ function createCard(application:Application){
     card.innerHTML +=
     `
     <footer class='center-column-layout'>
-        ${application.status === STOPPED ? `<button id='startApplication'>Start Application</button>` : ''}
-        ${application.status === UNCONFIGURED ? `<button id='startApplication'>Start Application</button>` : ''}
-        ${application.status === RUNNING ? `<button id='stopApplication'>Stop Application</button>` : ''}
-        <button id='configureApplication'>Configure Application</button>
-        <button id='deleteApplication'>Delete Application</button>
+        ${applicationButtonHashMap[application.status]}
+        <button id='${CONFIGURE_APPLICATION}'>Configure Application</button>
+        <button id='${DELETE_APPLICATION}'>Delete Application</button>
     </footer>
     `
 
     // add event listeners to card buttons
-    card.querySelector('#startApplication')?.addEventListener('click', () => startApplication(application))
-    card.querySelector('#stopApplication')?.addEventListener('click', () => stopApplication(application))
-    card.querySelector('#configureApplication').addEventListener('click', () => {
-        openConfigDialog(application);
-    });
-    card.querySelector('#deleteApplication').addEventListener('click', () => openConfirmationDialog(application));
+    card.querySelector(`#${START_APPLICATION}`)?.addEventListener(CLICK, () => startApplication(application));
+    card.querySelector(`#${STOP_APPLICATION}`)?.addEventListener(CLICK, () => stopApplication(application));
+
+    card.querySelector(`#${CONFIGURE_APPLICATION}`).addEventListener(CLICK, () => openConfigDialog(application));
+    card.querySelector(`#${DELETE_APPLICATION}`).addEventListener(CLICK, () => openConfirmationDialog(application));
 
     return card;
 }
@@ -75,13 +88,7 @@ export function renderApplicationCards(applications:Application[]){
     applicationDiv().innerHTML = '';
 
     // loop through applications and add cards to DOM
-    applications.forEach(
-        application => {
-            applicationDiv().appendChild(
-                createCard(application)
-            );
-        }
-    );
+    applications.forEach(application => applicationDiv().appendChild(createCard(application)));
 }
 
 export async function refreshApplications(){
@@ -90,44 +97,28 @@ export async function refreshApplications(){
         '/api/applications/refresh', 
         { method:'POST' }
     );
-    
     const response = await request.json();
 
     const applications = response.table;
     
-    if(response.status === 200){
-        renderApplicationCards(applications);
-        
-        openSnackbar(response.message, 'green', 5000);
-    }
-    else{
-        openSnackbar(response.message, 'red', 5000);
-    }
-
+    handleResponse(response, () => renderApplicationCards(applications))
 }
 
 export async function deleteApplication(id:string){
-    let request: any = await fetch(
+    const request: any = await fetch(
         `/api/application/${id}`, 
         { method:'DELETE' }
     );
+    const response = await request.json();
 
-    let response = await request.json();
-    console.log(response);
     const applications = response.table;
 
-    if(response.status === 200){
-        renderApplicationCards(applications);
-        openSnackbar(response.message, 'green', 5000);
-    }
-    else{
-        openSnackbar(response.message, 'red', 5000);
-    }
+    handleResponse(response, () => renderApplicationCards(applications));
 }
 
 export async function startApplication(application:Application, scriptArgs?:string){
     if(application.status === UNCONFIGURED){
-        return openSnackbar('You need to define an application start script first!', 'red');
+        return openSnackbar('You need to define an application start script first!', RED);
     }
 
     const request = await fetch(
@@ -142,19 +133,9 @@ export async function startApplication(application:Application, scriptArgs?:stri
             headers
         }
     );
-
     const response = await request.json();
 
-    console.log(response);
-    if(response.status === 200){
-        renderApplicationCards(response.table);
-
-        openSnackbar(response.message, 'green', 5000);
-    }
-    else{
-        openSnackbar(response.message, 'red', 5000);
-    }
-    
+    handleResponse(response, () => renderApplicationCards(response.table));
 }
 
 export async function stopApplication(application:Application){
@@ -168,18 +149,7 @@ export async function stopApplication(application:Application){
             headers
         }
     );
-
     const response = await request.json();
 
-    console.log(response);
-    if(response.status === 200){
-        renderApplicationCards(response.table);
-
-        openSnackbar(response.message, 'green', 5000);
-    }
-    else{
-        openSnackbar(response.message, 'red', 5000);
-    }
-    
-
+    handleResponse(response, () => renderApplicationCards(response.table));
 }

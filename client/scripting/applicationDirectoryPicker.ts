@@ -1,3 +1,6 @@
+import { handleResponse, CONSTANTS} from "./service";
+const {CLICK} = CONSTANTS;
+
 // HTML constants
 const DATA_PATH = 'data-path';
 
@@ -19,9 +22,6 @@ const EXPANDED_DIRECTORY = 'expanded-directory';
 
 const CANCEL = 'cancel';
 const SELECT_ITEM = 'selectItem';
-
-// JS constants
-const CLICK = 'click';
 
 // Directory picker "state"
 let selectedItem = '';

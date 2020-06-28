@@ -9,7 +9,7 @@ interface Application{
 
 // for whatever reason default Elements dont have the value property; this custom interface fixes that
 interface InputElement extends Element{
-    value:string;
+    value?:string;
     files?:FileList
     blur?:any;
 }
@@ -21,4 +21,4 @@ interface Snackbar{
     timeout?:number;
 }
 
-type snackbarColor = 'green' | 'red' | 'gray';
+type snackbarColor = string;
